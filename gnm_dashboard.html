@@ -171,10 +171,9 @@
         const li = document.createElement('li');
         li.textContent = event;
         document.getElementById('eventList').appendChild(li);
-        document.getElementById('event').value = ''; // Clear input
+        document.getElementById('event').value = ''; 
       }
-
-      // Optional: Scroll to dashboard
+      
       window.scrollTo({
         top: document.querySelector(".container").offsetTop,
         behavior: "smooth"
@@ -184,4 +183,5 @@
 
 </body>
 </html>
+
 

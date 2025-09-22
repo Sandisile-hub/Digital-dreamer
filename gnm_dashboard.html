@@ -1,11 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>General Member Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>General Member Dashboard | NaTeSA</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f4f4;
+    }
+
+    header {
+      background-color: #00274D;
+      color: #ffffff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      margin: 20px;
+    }
+
+    .card {
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 10px;
+      flex: 1 1 300px;
+      max-width: 400px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #00274D;
+    }
+
+    footer {
+      background-color: #00274D;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 8px 16px;
+      background-color: #0055aa;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #003e80;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+  </style>
 </head>
 <body>
-    
-</body>
-</html>
+
+  <header>
+    <h1>Welcome to NaTeSA</h1>
+    <p><strong>Home away from home</strong></p>
+  </header>
+
+  <div class="container">
+    <!-- User Form -->
+    <div class="card">
+      <h2>Enter Your Information</h2>
+      <form id="userForm">
+        <label for="name">Name:</label><br />
+        <input type="text" id="name" name="name" required /><br />
+
+        <label for="email">Email:</label><br />
+        <input type="email" id="email" name="email" required /><br />
+
+        <label for="event">Add Event:</label><br />
+        <input type="text" id="event" name="event" placeholder="Event name" /><br />
+
+        <button type="button" onclick="submitForm()">Submit</button>
+      </form>
+    </div>
+
+    <!-- Personal Info -->
+    <div class="card">
+      <h2>Personal Information</h2>
+      <p><strong>Name:</strong> <span id="displayName">-</span></p>
+      <p><strong>Email:</strong> <span id="displayEmail">-</span></p>
+      <p><strong>Membership ID:</strong> NTS12345</p>
+      <p><strong>Joined:</strong> September 2025</p>
+    </div>
+
+    <!-- Events -->
+    <div class="card">
+      <h2>Upcoming Events</h2>
+      <ul id="eventList">
+        <!-- Events will be added here -->
+      </ul>
+    </div>
+
+    <!-- Announcements -->
+    <div class="card">
+      <h2>Announcements</h2>
+      <ul>
+        <li>🎉 Congratulations to the new executive board!</li>
+        <li>🗓️ Monthly General Meeting on Sept 30.</li>
+        <li>📢 Submit your event ideas via the member portal.</li>
+      </ul>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="card">
+      <h2>Quick Links</h2>
+      <ul>
+        <li><a href="#">View Profile</a></li>
+        <li><a href="#">RSVP to Events</a></li>
+        <li><a href="#">Submit Feedback</a></li>
+        <li><a href="#">Contact Executives</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    <p>We are NaTeSA, NaTeSA is us !!</p>
+  </footer>
+
+  <script>
+    function submitForm() {
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const event = document.getElementById('event').value.trim();
+
+      if (name) {
+        document.getElementById('displayNa
+

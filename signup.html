@@ -18,7 +18,12 @@
       <input type="email" id="email" name="email" placeholder="Enter your email" required>
 
       <label for="phone">Phone Number</label>
-      <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+      <input type="tel" id="phone" name="phone" 
+            placeholder="Enter your phone number" 
+            pattern="\d{10,}" 
+            title="Phone number must be at least 10 digits"
+            required>
+
 
       <label for="role">Role</label>
       <select id="role" name="role" required>

@@ -160,5 +160,28 @@
       const event = document.getElementById('event').value.trim();
 
       if (name) {
-        document.getElementById('displayNa
+        document.getElementById('displayName').innerText = name;
+      }
+
+      if (email) {
+        document.getElementById('displayEmail').innerText = email;
+      }
+
+      if (event) {
+        const li = document.createElement('li');
+        li.textContent = event;
+        document.getElementById('eventList').appendChild(li);
+        document.getElementById('event').value = ''; // Clear input
+      }
+
+      // Optional: Scroll to dashboard
+      window.scrollTo({
+        top: document.querySelector(".container").offsetTop,
+        behavior: "smooth"
+      });
+    }
+  </script>
+
+</body>
+</html>
 

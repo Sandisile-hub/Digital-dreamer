@@ -14,12 +14,13 @@
             <div class="logo-section">
                 <h1>NaTeSA Statistics Dashboard</h1>
                 <div class="branch-name">Real-time Analytics & Insights</div>
-            </div>
-            <div class="header-user">
-                <span class="user-name" id="current-user-name">Loading...</span>
-                <span class="user-role" id="current-user-role">Member</span>
-                <button class="btn btn-primary btn-sm" onclick="refreshAllData()">Refresh Data</button>
-            </div>
+            </div><!-- Add this to your header section -->
+<div class="header-user">
+    <span class="user-name" id="current-user-name">Loading...</span>
+    <span class="user-role" id="current-user-role">Member</span>
+    <button class="btn btn-primary btn-sm" onclick="dashboard.refreshAllData()">Refresh Data</button>
+    <!-- Logout button will be added dynamically -->
+</div>
         </div>
     </header>
 
@@ -1181,7 +1182,6 @@
             console.log('Updating news by branch chart for period: ' + period);
         }
 
-        // Placeholder functions for data processing
         function updateUserCharts(users) {
             console.log('Updating user charts with', users.length, 'users');
         }

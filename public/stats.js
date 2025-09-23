@@ -11,7 +11,7 @@ const dashboard = {
 
     // Initialize dashboard
     async initializeDashboard() {
-        console.log('🚀 Starting dashboard initialization...');
+        console.log('Starting dashboard initialization...');
         this.showLoading(true);
         this.isLoading = true;
         
@@ -35,10 +35,10 @@ const dashboard = {
             // Load real data
             await this.loadAllDataFromDatabase();
             
-            console.log('✅ Dashboard initialized successfully');
+            console.log('Dashboard initialized successfully');
             
         } catch (error) {
-            console.error('❌ Dashboard initialization failed:', error);
+            console.error('Dashboard initialization failed:', error);
             this.showNotification('Using sample data for demonstration.', 'warning');
             this.useSampleData();
         } finally {
@@ -58,11 +58,11 @@ const dashboard = {
             }
             
             const data = await response.json();
-            console.log('✅ API connection successful:', data);
+            console.log('API connection successful:', data);
             return true;
             
         } catch (error) {
-            console.error('❌ API connection failed:', error);
+            console.error('API connection failed:', error);
             throw new Error(`Cannot connect to server: ${error.message}`);
         }
     },
@@ -105,7 +105,7 @@ const dashboard = {
                     };
                 }
             }
-            console.log('✅ User loaded:', this.currentUser);
+            console.log('User loaded:', this.currentUser);
         } catch (error) {
             console.warn('Using default user due to error:', error);
             this.currentUser = {
@@ -148,7 +148,7 @@ const dashboard = {
         const startTime = Date.now();
         
         try {
-            console.log('📊 Loading real data from API...');
+            console.log('Loading real data from API...');
             
             // Load all data in parallel
             const [users, events, branches, news, alumni] = await Promise.all([
@@ -156,10 +156,10 @@ const dashboard = {
                 this.fetchData('/events'),
                 this.fetchData('/branches'),
                 this.fetchData('/news'),
-                this.fetchData('/alumni') // You have a separate alumni table!
+                this.fetchData('/alumni')
             ]);
 
-            console.log('✅ All data loaded:', {
+            console.log('All data loaded:', {
                 users: users?.length || 0,
                 events: events?.length || 0,
                 branches: branches?.length || 0,
@@ -172,13 +172,13 @@ const dashboard = {
             this.processEventsData(events);
             this.processBranchesData(branches);
             this.processNewsData(news);
-            this.processAlumniData(alumni); // Use real alumni data
+            this.processAlumniData(alumni);
 
             this.charts.updateAllCharts(users, events, branches, alumni, news);
             this.updateSystemStatus(startTime, true);
             
         } catch (error) {
-            console.error('❌ Error loading real data:', error);
+            console.error('Error loading real data:', error);
             this.updateSystemStatus(startTime, false);
             throw error;
         }
@@ -187,7 +187,7 @@ const dashboard = {
     // Fetch data from API
     async fetchData(endpoint) {
         try {
-            console.log(`🔍 Fetching: ${endpoint}`);
+            console.log('Fetching:', endpoint);
             const response = await fetch(`${this.API_BASE}${endpoint}`);
             
             if (!response.ok) {
@@ -195,28 +195,28 @@ const dashboard = {
             }
             
             const data = await response.json();
-            console.log(`✅ ${endpoint}:`, data.length, 'items');
+            console.log(endpoint + ':', data.length, 'items');
             
             return data;
             
         } catch (error) {
-            console.error(`❌ Failed to fetch ${endpoint}:`, error);
+            console.error('Failed to fetch ' + endpoint + ':', error);
             throw error;
         }
     },
 
     // Process users data - using EXACT field names from your database
     processUsersData(users) {
-        console.log('🔧 PROCESSING USERS DATA with exact fields');
+        console.log('Processing users data with exact fields');
         
         if (!users || !Array.isArray(users) || users.length === 0) {
-            console.error('❌ Invalid users data');
+            console.error('Invalid users data');
             return;
         }
 
         // Debug: Show first user structure
-        console.log('🔍 First user fields:', Object.keys(users[0]));
-        console.log('🔍 First user data:', users[0]);
+        console.log('First user fields:', Object.keys(users[0]));
+        console.log('First user data:', users[0]);
 
         try {
             const totalMembers = users.length;
@@ -250,7 +250,7 @@ const dashboard = {
                 }
             }).length;
 
-            console.log('📊 User statistics:', {
+            console.log('User statistics:', {
                 totalMembers,
                 activeMembers,
                 becMembers,
@@ -274,10 +274,10 @@ const dashboard = {
             // Populate recent users table with exact fields
             this.populateRecentUsersTable(users.slice(-10).reverse());
             
-            console.log('✅ Users data processed successfully');
+            console.log('Users data processed successfully');
             
         } catch (error) {
-            console.error('❌ Error processing users data:', error);
+            console.error('Error processing users data:', error);
         }
     },
 
@@ -340,7 +340,7 @@ const dashboard = {
 
             this.updateMetric('total-branches', totalBranches);
             this.updateMetric('branches-total', totalBranches);
-            this.updateMetric('active-branches', totalBranches); // Assuming all are active
+            this.updateMetric('active-branches', totalBranches);
             this.updateMetric('avg-members-branch', avgMembersPerBranch);
             this.updateMetric('top-branch-members', topBranch.member_count || 0);
 
@@ -534,7 +534,7 @@ const dashboard = {
     },
 
     showNotification(message, type = 'info') {
-        console.log(`${type.toUpperCase()}: ${message}`);
+        console.log(type.toUpperCase() + ': ' + message);
     },
 
     updateTrend(elementId, change) {
@@ -542,7 +542,7 @@ const dashboard = {
         if (element) {
             const trendClass = change > 0 ? 'trend-up' : (change < 0 ? 'trend-down' : 'trend-neutral');
             const symbol = change > 0 ? '↗' : (change < 0 ? '↘' : '→');
-            element.textContent = `${symbol} ${Math.abs(change).toFixed(1)}%`;
+            element.textContent = symbol + ' ' + Math.abs(change).toFixed(1) + '%';
             element.className = 'stat-trend ' + trendClass;
         }
     },
@@ -604,7 +604,59 @@ const dashboard = {
     exportEventData() { this.showNotification('Export feature coming soon!', 'info'); },
     exportBranchData() { this.showNotification('Export feature coming soon!', 'info'); },
     exportAlumniData() { this.showNotification('Export feature coming soon!', 'info'); },
-    exportNewsData() { this.showNotification('Export feature coming soon!', 'info'); }
+    exportNewsData() { this.showNotification('Export feature coming soon!', 'info'); },
+
+    // Refresh all data
+    refreshAllData() {
+        if (this.isLoading) {
+            console.log('Refresh already in progress, skipping...');
+            return;
+        }
+        
+        this.showLoading(true);
+        this.isLoading = true;
+        
+        this.loadAllDataFromDatabase()
+            .then(() => {
+                this.showNotification('Data refreshed successfully!', 'success');
+            })
+            .catch((error) => {
+                this.showNotification('Error refreshing data', 'error');
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    },
+
+    // Show specific section
+    showSection(sectionId) {
+        if (this.getAccessLevel(sectionId) === 'none') {
+            alert('Access denied: You do not have permission to view this section.');
+            return;
+        }
+
+        // Hide all sections
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        // Remove active class from all nav items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Show selected section
+        const sectionElement = document.getElementById(sectionId + '-section');
+        if (sectionElement) {
+            sectionElement.classList.add('active');
+        }
+        
+        // Activate corresponding nav item
+        const activeNavItem = document.querySelector('.nav-item[data-section="' + sectionId + '"]');
+        if (activeNavItem) {
+            activeNavItem.classList.add('active');
+        }
+    }
 };
 
 // Charts Controller
@@ -612,7 +664,7 @@ const charts = {
     chartInstances: {},
 
     initializeAllCharts() {
-        console.log('📈 Initializing charts...');
+        console.log('Initializing charts...');
         this.initializeMemberGrowthChart();
         this.initializeRoleDistributionChart();
         this.initializeStatusPieChart();
@@ -626,9 +678,16 @@ const charts = {
             
             this.chartInstances.memberGrowthChart = new Chart(ctx.getContext('2d'), {
                 type: 'line',
-                data: { labels: [], datasets: [{
-                    label: 'Members', data: [], borderColor: '#3498db', backgroundColor: 'rgba(52, 152, 219, 0.1)', fill: true
-                }]},
+                data: { 
+                    labels: [], 
+                    datasets: [{
+                        label: 'Members', 
+                        data: [], 
+                        borderColor: '#3498db', 
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)', 
+                        fill: true
+                    }]
+                },
                 options: { responsive: true, maintainAspectRatio: false }
             });
         } catch (error) {
@@ -643,9 +702,13 @@ const charts = {
             
             this.chartInstances.roleDistributionChart = new Chart(ctx.getContext('2d'), {
                 type: 'doughnut',
-                data: { labels: [], datasets: [{
-                    data: [], backgroundColor: ['#3498db', '#2ecc71', '#e74c3c', '#f39c12']
-                }]},
+                data: { 
+                    labels: [], 
+                    datasets: [{
+                        data: [], 
+                        backgroundColor: ['#3498db', '#2ecc71', '#e74c3c', '#f39c12']
+                    }]
+                },
                 options: { responsive: true, maintainAspectRatio: false }
             });
         } catch (error) {
@@ -660,9 +723,13 @@ const charts = {
             
             this.chartInstances.statusPieChart = new Chart(ctx.getContext('2d'), {
                 type: 'pie',
-                data: { labels: [], datasets: [{
-                    data: [], backgroundColor: ['#2ecc71', '#e74c3c', '#f39c12']
-                }]},
+                data: { 
+                    labels: [], 
+                    datasets: [{
+                        data: [], 
+                        backgroundColor: ['#2ecc71', '#e74c3c', '#f39c12']
+                    }]
+                },
                 options: { responsive: true, maintainAspectRatio: false }
             });
         } catch (error) {
@@ -677,9 +744,14 @@ const charts = {
             
             this.chartInstances.monthlyGrowthBarChart = new Chart(ctx.getContext('2d'), {
                 type: 'bar',
-                data: { labels: [], datasets: [{
-                    label: 'New Members', data: [], backgroundColor: '#3498db'
-                }]},
+                data: { 
+                    labels: [], 
+                    datasets: [{
+                        label: 'New Members', 
+                        data: [], 
+                        backgroundColor: '#3498db'
+                    }]
+                },
                 options: { responsive: true, maintainAspectRatio: false }
             });
         } catch (error) {
@@ -720,11 +792,29 @@ const charts = {
             this.chartInstances.statusPieChart.data.datasets[0].data = Object.values(statuses);
             this.chartInstances.statusPieChart.update();
         }
+    },
+
+    // Chart update methods
+    updateMemberGrowthChart() {
+        const period = document.getElementById('growth-period').value;
+        console.log('Updating member growth chart for period: ' + period);
+    },
+
+    updateRegistrationChart() {
+        const year = document.getElementById('registration-year').value;
+        console.log('Updating registration chart for year: ' + year);
+    },
+
+    downloadChart(chartId) {
+        const chart = this.chartInstances[chartId];
+        if (chart) {
+            console.log('Downloading chart: ' + chartId);
+        }
     }
 };
 
-// Initialize dashboard
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('🎯 DOM loaded - starting dashboard...');
+// Initialize dashboard when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded - starting dashboard...');
     dashboard.initializeDashboard();
 });

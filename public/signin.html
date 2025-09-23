@@ -417,6 +417,65 @@
             });
         }
     </script>
+    <script>
+// Function to handle login and redirect based on role
+async function handleLogin(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Store user data in localStorage
+            localStorage.setItem('currentUser', JSON.stringify(data.user));
+            
+            // Redirect based on role
+            redirectBasedOnRole(data.user.role);
+        } else {
+            alert('Login failed: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        alert('Login failed. Please try again.');
+    }
+}
+
+// Function to redirect based on user role
+function redirectBasedOnRole(role) {
+    switch(role.toLowerCase()) {
+        case 'bec':
+            window.location.href = 'bec_dashboard.html';
+            break;
+        case 'nec':
+            window.location.href = 'nec_dashboard.html';
+            break;
+        case 'member':
+            window.location.href = 'gnm_dashboard.html';
+            break;
+        default:
+            window.location.href = 'gnm_dashboard.html'; // Default fallback
+    }
+}
+
+// Attach event listener to login form
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+    }
+});
+</script>
     <script type="module">
           const googleBtn = document.querySelector('.social-btn.google');
 

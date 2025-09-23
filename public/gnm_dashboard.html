@@ -583,9 +583,9 @@
                 <button class="nav-item" onclick="showSection('resources')" data-section="resources">
                     Resources
                 </button>
-                <button class="nav-item" onclick="showSection('profile')" data-section="profile">
+                <a href="profile.html"><button class="nav-item" onclick="showSection('profile')" data-section="profile">
                     My Profile
-                </button>
+                </button></a>
             </div>
         </nav>
 
@@ -654,6 +654,40 @@
                 <div id="resources-list" class="data-list"></div>
             </section>
 
+            <!-- Profile Section -->
+            <section id="profile-section" class="content-section">
+                <div class="section-header">
+                    <h2>My Profile</h2>
+                </div>
+                <div class="profile-content">
+                    <div class="form-group">
+                        <label>Member ID</label>
+                        <div class="form-control" id="profile-id">GM-001</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <div class="form-control" id="profile-name">General Member</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <div class="form-control" id="profile-email">member@natesa.com</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Branch</label>
+                        <div class="form-control" id="profile-branch">Main Branch</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Member Since</label>
+                        <div class="form-control" id="profile-join-date">January 2024</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <div class="status-badge status-active" id="profile-status">Active</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
 
     <!-- Success/Error Messages -->
     <div id="toast" class="toast"></div>

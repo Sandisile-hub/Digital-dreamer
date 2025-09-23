@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NaTeSA Sign Up</title>
+  <link rel="stylesheet" href="signupstyle.css">
+</head>
+<body>
+
+  <div class="container">
+    <h2>NaTeSA Sign Up</h2>
+    <form id="signupForm">
+      <label for="fullname">Full Name</label>
+      <input type="text" id="fullname" name="fullname" placeholder="Enter your full name" required>
+
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" 
+            placeholder="Enter your phone number" 
+            pattern="\d{10,}" 
+            title="Phone number must be at least 10 digits"
+            required>
+
+      <label for="role">Role</label>
+      <select id="role" name="role" required>
+        <option value="">-- Select Role --</option>
+        <option value="member">General Member</option>
+        <option value="alumni">Alumni</option>
+        <option value="branch_admin">BEC Member</option>
+        <option value="admin">NEC Member</option>
+      </select>
+
+      <label for="university">University</label>
+      <select id="university" name="university" required>
+        <option value="">-- Select University --</option>
+        <option value="ukzn">University of KwaZulu-Natal (UKZN)</option>
+        <option value="uct">University of Cape Town (UCT)</option>
+        <option value="wits">University of the Witwatersrand (Wits)</option>
+        <option value="dut">Durban University of Technology (DUT)</option>
+        <option value="unisa">University of South Africa (UNISA)</option>
+        <option value="nwu">North West University (NWU)</option>
+        <option value="ru">Rhodes University (RU)</option>
+        <option value="cput">Cape Penisula University of Technology (CPUT)</option>
+        <option value="uj">University Of Johannesburg (UJ)</option>
+        <option value="up">University Of Pretoria (UP)</option>
+        <option value="tut">Tshwane University Of Technology (TUT)</option>
+        <option value="cut">Central University Of Technology (CUT)</option>
+        <option value="ufs">University Of The Free State (UFS)</option>
+        <option value="wsu">Walter Sisulu University(WSU)</option>
+        <option value="spu">Sol Plaatje (SPU)</option>
+        <option value="unizulu">University of Zululand (Unizulu)</option>
+        <option value="mut">Mangosuthu University Of Technology (MUT)</option>
+        <option value="ufh">Fort Hare (UFH)</option>
+        <option value="nmu">Nelson Mandela University (NMU)</option>
+        <option value="ump">University of Mpumalanga (UMP)</option>
+        <option value="ul">University of Limpopo</option>
+        <option value="vut">Vaal University Of Technology</option>
+        <option value="other">Other</option>
+      </select>
+
+      <label for="password">Password</label>
+      <div class="password-container">
+      <input type="password" id="password" name="password" 
+         placeholder="Create a password" 
+         required 
+         pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}" 
+         title="Password must be at least 8 characters long, contain uppercase, lowercase, number, and special character">
+      <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
+      </div>
+
+      <label for="confirm">Confirm Password</label>
+      <div class="password-container">
+      <input type="password" id="confirm" name="confirm" 
+         placeholder="Confirm your password" required>
+      <span class="toggle-password" onclick="togglePassword('confirm')">👁️</span>
+      </div>
+
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <div class="footer">
+      Already have an account? <a href="signin.html">Login here</a>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    function togglePassword(fieldId) {
+      var field = document.getElementById(fieldId);
+      if (field.type === "password") {
+        field.type = "text";
+      } else {
+        field.type = "password";
+      }
+    }
+
+    function signupUser(userData) {
+      fetch('http://localhost:5000/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+      })
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(data) {
+        if (data.error) {
+          alert('Error: ' + data.error);
+        } else {
+          alert('Sign up successful!');
+          
+          var role = userData.role;
+          if (role === 'branch_admin') {
+            window.location.href = 'bec_dashboard.html';
+          } else if (role === 'admin') {
+            window.location.href = 'nec_dashboard.html';
+          } else {
+            window.location.href = 'gnm_dashboard.html';
+          }
+        }
+      })
+      .catch(function(error) {
+        console.log('Error:', error);
+        alert('Sign up failed. Please try again.');
+      });
+    }
+
+    function getBranchIdFromUniversity(university) {
+      var branchMap = {
+        'ukzn': 1,
+        'uct': 2,
+        'wits': 3,
+        'dut': 4,
+        'unisa': 5,
+        'nwu': 6,
+        'ru': 7,
+        'cput': 8,
+        'uj': 9,
+        'up': 10,
+        'tut': 11,
+        'cut': 12,
+        'ufs': 13,
+        'wsu': 14,
+        'spu': 15,
+        'unizulu': 16,
+        'mut': 17,
+        'ufh': 18,
+        'nmu': 19,
+        'ump': 20,
+        'ul': 21,
+        'vut': 22,
+        'other': 23
+      };
+      return branchMap[university] || 1;
+    }
+
+    function handleSignup(event) {
+      event.preventDefault();
+
+      var fullname = document.getElementById('fullname').value;
+      var email = document.getElementById('email').value;
+      var phone = document.getElementById('phone').value;
+      var role = document.getElementById('role').value;
+      var university = document.getElementById('university').value;
+      var password = document.getElementById('password').value;
+      var confirm = document.getElementById('confirm').value;
+
+      if (password !== confirm) {
+        alert('Passwords do not match!');
+        return;
+      }
+
+      var passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+      if (!passwordPattern.test(password)) {
+        alert('Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.');
+        return;
+      }
+
+      if (!role) {
+        alert('Please select a role.');
+        return;
+      }
+
+      if (!university) {
+        alert('Please select a university.');
+        return;
+      }
+
+      var branchId = getBranchIdFromUniversity(university);
+      var isBecMember = (role === 'branch_admin');
+      var necPosition = (role === 'admin') ? 'Admin' : null;
+      var becPosition = (role === 'branch_admin') ? 'Branch Admin' : null;
+
+      var userData = {
+        name: fullname,
+        email: email,
+        password: password,
+        role: role,
+        branch_id: branchId,
+        is_bec_member: isBecMember,
+        nec_position: necPosition,
+        bec_position: becPosition,
+        status: 'active'
+      };
+
+      signupUser(userData);
+    }
+
+    document.getElementById('signupForm').addEventListener('submit', handleSignup);
+  </script>
+
+</body>
+</html>

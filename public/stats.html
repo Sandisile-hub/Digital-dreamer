@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NaTeSA - Statistics Dashboard</title>
+    <link rel="stylesheet" href="stats.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <h1>NaTeSA Statistics Dashboard</h1>
+                <div class="branch-name">Real-time Analytics & Insights</div>
+            </div>
+            <div class="header-user">
+                <span class="user-name" id="current-user-name">Loading...</span>
+                <span class="user-role" id="current-user-role">Member</span>
+                <button class="btn btn-primary btn-sm" onclick="refreshAllData()">Refresh Data</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="dashboard-nav">
+        <div class="nav-content">
+            <button class="nav-item active" onclick="showSection('overview')" data-section="overview">
+                Overview
+            </button>
+            <button class="nav-item" onclick="showSection('users')" data-section="users">
+                User Statistics
+            </button>
+            <button class="nav-item" onclick="showSection('events')" data-section="events">
+                Event Analytics
+            </button>
+            <button class="nav-item" onclick="showSection('branches')" data-section="branches">
+                Branch Performance
+            </button>
+            <button class="nav-item" onclick="showSection('alumni')" data-section="alumni">
+                Alumni Tracking
+            </button>
+            <button class="nav-item" onclick="showSection('news')" data-section="news">
+                News & Content
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <!-- Overview Section -->
+        <section id="overview-section" class="content-section active">
+            <div class="section-header">
+                <h2>Dashboard Overview</h2>
+                <div class="section-actions">
+                    <span class="access-badge access-full" id="overview-access">Full Access</span>
+                    <button class="btn btn-primary" onclick="exportOverviewData()">Export Report</button>
+                </div>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Members</h3>
+                    <div class="stat-number" id="total-members">0</div>
+                    <div class="stat-trend" id="members-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Events</h3>
+                    <div class="stat-number" id="active-events">0</div>
+                    <div class="stat-trend" id="events-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Branches</h3>
+                    <div class="stat-number" id="total-branches">0</div>
+                    <div class="stat-trend" id="branches-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Alumni Count</h3>
+                    <div class="stat-number" id="total-alumni">0</div>
+                    <div class="stat-trend" id="alumni-trend">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Charts Row 1 -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Member Growth Timeline</h3>
+                        <div class="chart-actions">
+                            <select class="filter-select" id="growth-period" onchange="updateMemberGrowthChart()">
+                                <option value="6">Last 6 Months</option>
+                                <option value="12">Last 12 Months</option>
+                                <option value="24">Last 2 Years</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="memberGrowthChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>User Distribution by Role</h3>
+                        <div class="chart-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="downloadChart('roleDistributionChart')">Download</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="roleDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+<div class="chart-container">
+    <div class="chart-header">
+        <h3>Real-time System Metrics</h3>
+        <div class="chart-actions">
+            <span class="access-badge access-full">Live</span>
+        </div>
+    </div>
+    <div class="chart-wrapper">
+        <canvas id="realtimeMetricsChart"></canvas>
+    </div>
+</div>
+            <!-- System Status -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>System Status & Activity</h3>
+                    <div class="chart-actions">
+                        <span class="access-badge access-full">Live Data</span>
+                    </div>
+                </div>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <span class="status-label">Database Connection</span>
+                        <span class="status-value" id="db-status">Checking...</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Last Data Update</span>
+                        <span class="status-value" id="last-update">Never</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Active Sessions</span>
+                        <span class="status-value" id="active-sessions">0</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">API Response Time</span>
+                        <span class="status-value" id="api-response">0ms</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- User Statistics Section -->
+        <section id="users-section" class="content-section">
+            <div class="section-header">
+                <h2>User Statistics & Analytics</h2>
+                <div class="section-actions">
+                    <span class="access-badge" id="users-access">Partial Access</span>
+                    <button class="btn btn-primary" onclick="exportUserData()">Export User Data</button>
+                </div>
+            </div>
+
+            <!-- User Metrics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>New Members (30 days)</h3>
+                    <div class="stat-number" id="new-members-month">0</div>
+                    <div class="stat-trend" id="new-members-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Members</h3>
+                    <div class="stat-number" id="active-members">0</div>
+                    <div class="stat-trend" id="active-members-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>BEC Members</h3>
+                    <div class="stat-number" id="bec-members">0</div>
+                    <div class="stat-trend" id="bec-members-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>NEC Members</h3>
+                    <div class="stat-number" id="nec-members">0</div>
+                    <div class="stat-trend" id="nec-members-trend">Loading...</div>
+                </div>
+            </div>
+
+            <!-- User Charts -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Member Registration Timeline</h3>
+                        <div class="chart-actions">
+                            <select class="filter-select" id="registration-year" onchange="updateRegistrationChart()">
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="all">All Time</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="registrationTimelineChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Member Status Distribution</h3>
+                        <div class="chart-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="downloadChart('statusDistributionChart')">Download</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="statusDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+<div class="chart-container">
+    <div class="chart-header">
+        <h3>Member Engagement Timeline</h3>
+        <div class="chart-actions">
+            <button class="btn btn-secondary btn-sm" onclick="downloadChart('engagementTimelineChart')">Download</button>
+        </div>
+    </div>
+    <div class="chart-wrapper">
+        <canvas id="engagementTimelineChart"></canvas>
+    </div>
+</div>
+            <!-- User Details Table -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>Recent Member Registrations</h3>
+                    <div class="chart-actions">
+                        <span class="access-badge access-partial">Last 50 Records</span>
+                    </div>
+                </div>
+                <div class="chart-container">
+    <div class="chart-header">
+        <h3>Member Geographic Distribution</h3>
+        <div class="chart-actions">
+            <select class="filter-select" onchange="updateGeoDistribution(this.value)">
+                <option value="province">By Province</option>
+                <option value="university">By University</option>
+            </select>
+        </div>
+    </div>
+    <div class="chart-wrapper">
+        <canvas id="geoDistributionChart"></canvas>
+    </div>
+</div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Branch</th>
+                                <th>Join Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-users-table">
+                            <!-- User data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+<!-- Add this in overview-section -->
+<div class="charts-grid">
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3>Member Status Distribution</h3>
+            <div class="chart-actions">
+                <button class="btn btn-secondary btn-sm" onclick="downloadChart('statusPieChart')">Download</button>
+            </div>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="statusPieChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3>Monthly Member Growth</h3>
+            <div class="chart-actions">
+                <select class="filter-select" onchange="updateMonthlyGrowth(this.value)">
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                </select>
+            </div>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="monthlyGrowthBarChart"></canvas>
+        </div>
+    </div>
+</div>
+<div class="charts-grid">
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3>User Role Distribution</h3>
+            <div class="chart-actions">
+                <button class="btn btn-secondary btn-sm" onclick="downloadChart('rolePieChart')">Download</button>
+            </div>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="rolePieChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3>Members by Branch</h3>
+            <div class="chart-actions">
+                <select class="filter-select" onchange="updateBranchMembersChart(this.value)">
+                    <option value="all">All Branches</option>
+                    <option value="top10">Top 10 Branches</option>
+                </select>
+            </div>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="branchMembersBarChart"></canvas>
+        </div>
+    </div>
+</div>
+        <!-- Event Analytics Section -->
+        <section id="events-section" class="content-section">
+            <div class="section-header">
+                <h2>Event Analytics</h2>
+                <div class="section-actions">
+                    <span class="access-badge" id="events-access">Partial Access</span>
+                    <button class="btn btn-primary" onclick="exportEventData()">Export Event Data</button>
+                </div>
+            </div>
+
+            <!-- Event Metrics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Events</h3>
+                    <div class="stat-number" id="total-events">0</div>
+                    <div class="stat-trend" id="total-events-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Upcoming Events</h3>
+                    <div class="stat-number" id="upcoming-events">0</div>
+                    <div class="stat-trend" id="upcoming-events-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Events This Month</h3>
+                    <div class="stat-number" id="events-this-month">0</div>
+                    <div class="stat-trend" id="events-month-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg. Attendance</h3>
+                    <div class="stat-number" id="avg-attendance">0</div>
+                    <div class="stat-trend" id="attendance-trend">Loading...</div>
+                </div>
+            </div>
+<div class="charts-grid">
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3>Events by Type</h3>
+            <div class="chart-actions">
+                <button class="btn btn-secondary btn-sm" onclick="downloadChart('eventTypePieChart')">Download</button>
+            </div>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="eventTypePieChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3>Monthly Events Comparison</h3>
+            <div class="chart-actions">
+                <select class="filter-select" onchange="updateMonthlyEventsChart(this.value)">
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                </select>
+            </div>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="monthlyEventsBarChart"></canvas>
+        </div>
+    </div>
+</div>
+
+            <!-- Upcoming Events Table -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>Upcoming Events</h3>
+                    <div class="chart-actions">
+                        <span class="access-badge access-read">Next 30 Days</span>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Event Title</th>
+                                <th>Date & Time</th>
+                                <th>Type</th>
+                                <th>Branch</th>
+                                <th>Location</th>
+                                <th>Organizer</th>
+                            </tr>
+                        </thead>
+                        <tbody id="upcoming-events-table">
+                            <!-- Event data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Branch Performance Section -->
+        <section id="branches-section" class="content-section">
+            <div class="section-header">
+                <h2>Branch Performance Analytics</h2>
+                <div class="section-actions">
+                    <span class="access-badge" id="branches-access">Partial Access</span>
+                    <button class="btn btn-primary" onclick="exportBranchData()">Export Branch Data</button>
+                </div>
+            </div>
+
+            <!-- Branch Metrics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Branches</h3>
+                    <div class="stat-number" id="branches-total">0</div>
+                    <div class="stat-trend" id="branches-total-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Branches</h3>
+                    <div class="stat-number" id="active-branches">0</div>
+                    <div class="stat-trend" id="active-branches-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg. Members/Branch</h3>
+                    <div class="stat-number" id="avg-members-branch">0</div>
+                    <div class="stat-trend" id="avg-members-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Top Branch</h3>
+                    <div class="stat-number" id="top-branch-members">0</div>
+                    <div class="stat-trend" id="top-branch-name">Loading...</div>
+                </div>
+            </div>
+<div class="charts-grid">
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3>Branch Size Distribution</h3>
+            <div class="chart-actions">
+                <button class="btn btn-secondary btn-sm" onclick="downloadChart('branchSizePieChart')">Download</button>
+            </div>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="branchSizePieChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="chart-container">
+        <div class="chart-header">
+            <h3>Branch Performance Ranking</h3>
+            <div class="chart-actions">
+                <select class="filter-select" onchange="updateBranchPerformanceChart(this.value)">
+                    <option value="members">By Members</option>
+                    <option value="events">By Events</option>
+                    <option value="alumni">By Alumni</option>
+                </select>
+            </div>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="branchPerformanceBarChart"></canvas>
+        </div>
+    </div>
+</div>
+
+            <!-- Branch Performance Table -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h3>Branch Performance Ranking</h3>
+                    <div class="chart-actions">
+                        <span class="access-badge access-full">Comprehensive View</span>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Branch Name</th>
+                                <th>University</th>
+                                <th>Total Members</th>
+                                <th>Active Members</th>
+                                <th>Events Held</th>
+                                <th>Alumni Count</th>
+                                <th>Growth Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody id="branch-ranking-table">
+                            <!-- Branch data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Alumni Tracking Section -->
+        <section id="alumni-section" class="content-section">
+            <div class="section-header">
+                <h2>Alumni Tracking & Analytics</h2>
+                <div class="section-actions">
+                    <span class="access-badge" id="alumni-access">Read Access</span>
+                    <button class="btn btn-primary" onclick="exportAlumniData()">Export Alumni Data</button>
+                </div>
+            </div>
+
+            <!-- Alumni Metrics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Alumni</h3>
+                    <div class="stat-number" id="alumni-total">0</div>
+                    <div class="stat-trend" id="alumni-total-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Alumni This Year</h3>
+                    <div class="stat-number" id="alumni-this-year">0</div>
+                    <div class="stat-trend" id="alumni-year-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Employment Rate</h3>
+                    <div class="stat-number" id="employment-rate">0%</div>
+                    <div class="stat-trend" id="employment-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg. Graduation Year</h3>
+                    <div class="stat-number" id="avg-graduation-year">0</div>
+                    <div class="stat-trend" id="graduation-trend">Loading...</div>
+                </div>
+            </div>
+
+            <!-- Alumni Charts -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Alumni by Graduation Year</h3>
+                        <div class="chart-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="downloadChart('alumniByYearChart')">Download</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="alumniByYearChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Alumni Employment Status</h3>
+                        <div class="chart-actions">
+                            <select class="filter-select" id="employment-filter" onchange="updateEmploymentChart()">
+                                <option value="all">All Branches</option>
+                                <option value="main">Main Branch Only</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="employmentStatusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- News & Content Section -->
+        <section id="news-section" class="content-section">
+            <div class="section-header">
+                <h2>News & Content Analytics</h2>
+                <div class="section-actions">
+                    <span class="access-badge" id="news-access">Read Access</span>
+                    <button class="btn btn-primary" onclick="exportNewsData()">Export News Data</button>
+                </div>
+            </div>
+
+            <!-- News Metrics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total News Articles</h3>
+                    <div class="stat-number" id="total-news">0</div>
+                    <div class="stat-trend" id="total-news-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Articles This Month</h3>
+                    <div class="stat-number" id="news-this-month">0</div>
+                    <div class="stat-trend" id="news-month-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Authors</h3>
+                    <div class="stat-number" id="active-authors">0</div>
+                    <div class="stat-trend" id="authors-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg. Articles/Author</h3>
+                    <div class="stat-number" id="avg-articles-author">0</div>
+                    <div class="stat-trend" id="articles-trend">Loading...</div>
+                </div>
+            </div>
+
+            <!-- News Charts -->
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>News Publishing Timeline</h3>
+                        <div class="chart-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="downloadChart('newsTimelineChart')">Download</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="newsTimelineChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>News by Branch</h3>
+                        <div class="chart-actions">
+                            <select class="filter-select" id="news-period" onchange="updateNewsByBranchChart()">
+                                <option value="year">This Year</option>
+                                <option value="quarter">This Quarter</option>
+                                <option value="month">This Month</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="newsByBranchChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Loading database statistics...</p>
+        </div>
+    </div>
+
+    <script>
+        // API Base URL - Point to your backend
+        var API_BASE = 'http://localhost:5000/api';
+        
+        // Current user information (to be replaced with session data)
+        var currentUser = {
+            id: 1,
+            name: 'System Administrator',
+            role: 'nec', // Can be 'nec', 'bec', or 'member'
+            branch_id: 1,
+            branch_name: 'National Executive'
+        };
+
+        // Chart instances storage
+        var charts = {};
+        var lastUpdateTime = null;
+
+        // Initialize dashboard
+        function initializeDashboard() {
+            showLoading(true);
+            
+            // Set user information
+            document.getElementById('current-user-name').textContent = currentUser.name;
+            document.getElementById('current-user-role').textContent = currentUser.role.toUpperCase();
+            
+            // Set access controls based on role
+            setAccessControls();
+            
+            // Load all data from database
+            loadAllDataFromDatabase();
+            
+            // Initialize empty charts
+            initializeCharts();
+            
+            // Set up auto-refresh every 5 minutes
+            setInterval(function() {
+                refreshAllData();
+            }, 300000);
+        }
+
+        // Set access controls based on user role
+        function setAccessControls() {
+            var sections = ['overview', 'users', 'events', 'branches', 'alumni', 'news'];
+            
+            for (var i = 0; i < sections.length; i++) {
+                var section = sections[i];
+                var accessBadge = document.getElementById(section + '-access');
+                var accessLevel = getAccessLevel(section);
+                
+                accessBadge.textContent = getAccessText(accessLevel);
+                accessBadge.className = 'access-badge ' + getAccessClass(accessLevel);
+            }
+        }
+
+        // Determine access level for a section
+        function getAccessLevel(section) {
+            // TODO: Replace with actual session-based access control
+            if (currentUser.role === 'nec') {
+                return 'full'; // NEC has full access to everything
+            } else if (currentUser.role === 'bec') {
+                // BEC has partial access to most sections
+                if (section === 'overview' || section === 'users' || section === 'events' || section === 'branches') {
+                    return 'partial';
+                } else {
+                    return 'read';
+                }
+            } else {
+                // Regular members have read-only access to basic sections
+                if (section === 'overview' || section === 'events' || section === 'news') {
+                    return 'read';
+                } else {
+                    return 'none';
+                }
+            }
+        }
+
+        function getAccessText(level) {
+            switch(level) {
+                case 'full': return 'Full Access';
+                case 'partial': return 'Partial Access';
+                case 'read': return 'Read Only';
+                default: return 'No Access';
+            }
+        }
+
+        function getAccessClass(level) {
+            switch(level) {
+                case 'full': return 'access-full';
+                case 'partial': return 'access-partial';
+                case 'read': return 'access-read';
+                default: return 'access-none';
+            }
+        }
+
+        // Load all data from database
+        function loadAllDataFromDatabase() {
+            var startTime = Date.now();
+            
+            // Load users data
+            loadUsersData();
+            
+            // Load events data
+            loadEventsData();
+            
+            // Load branches data
+            loadBranchesData();
+            
+            // Load alumni data
+            loadAlumniData();
+            
+            // Load news data
+            loadNewsData();
+            
+            // Update system status
+            updateSystemStatus(startTime);
+        }
+
+        // Load users data from database
+        function loadUsersData() {
+            fetch(API_BASE + '/users')
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(function(users) {
+                    processUsersData(users);
+                })
+                .catch(function(error) {
+                    console.error('Error loading users data:', error);
+                    showError('users', 'Failed to load user data');
+                });
+        }
+
+        // Process and display users data
+        function processUsersData(users) {
+            if (!users || users.length === 0) {
+                showError('users', 'No user data available');
+                return;
+            }
+
+            // Calculate statistics
+            var totalMembers = users.length;
+            var activeMembers = users.filter(function(user) {
+                return user.status === 'active';
+            }).length;
+            
+            var becMembers = users.filter(function(user) {
+                return user.is_bec_member === true;
+            }).length;
+            
+            var necMembers = users.filter(function(user) {
+                return user.role === 'admin' || user.nec_position !== null;
+            }).length;
+            
+            var newMembersMonth = users.filter(function(user) {
+                var joinDate = new Date(user.created_at);
+                var monthAgo = new Date();
+                monthAgo.setMonth(monthAgo.getMonth() - 1);
+                return joinDate > monthAgo;
+            }).length;
+
+            // Update UI
+            document.getElementById('total-members').textContent = totalMembers.toLocaleString();
+            document.getElementById('active-members').textContent = activeMembers.toLocaleString();
+            document.getElementById('bec-members').textContent = becMembers.toLocaleString();
+            document.getElementById('nec-members').textContent = necMembers.toLocaleString();
+            document.getElementById('new-members-month').textContent = newMembersMonth.toLocaleString();
+
+            // Update trends
+            updateTrend('members-trend', 5); // Sample trend data
+            updateTrend('active-members-trend', 3);
+            updateTrend('bec-members-trend', 2);
+            updateTrend('nec-members-trend', 1);
+
+            // Update charts
+            updateUserCharts(users);
+            
+            // Populate recent users table
+            populateRecentUsersTable(users.slice(0, 10));
+        }
+
+        // Load events data from database
+        function loadEventsData() {
+            fetch(API_BASE + '/events')
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(function(events) {
+                    processEventsData(events);
+                })
+                .catch(function(error) {
+                    console.error('Error loading events data:', error);
+                    showError('events', 'Failed to load events data');
+                });
+        }
+
+        // Process and display events data
+        function processEventsData(events) {
+            if (!events || events.length === 0) {
+                showError('events', 'No events data available');
+                return;
+            }
+
+            var totalEvents = events.length;
+            var upcomingEvents = events.filter(function(event) {
+                return new Date(event.date) > new Date();
+            }).length;
+            
+            var eventsThisMonth = events.filter(function(event) {
+                var eventDate = new Date(event.date);
+                var now = new Date();
+                return eventDate.getMonth() === now.getMonth() && eventDate.getFullYear() === now.getFullYear();
+            }).length;
+
+            // Update UI
+            document.getElementById('total-events').textContent = totalEvents.toLocaleString();
+            document.getElementById('upcoming-events').textContent = upcomingEvents.toLocaleString();
+            document.getElementById('active-events').textContent = upcomingEvents.toLocaleString(); // Same as upcoming for now
+            document.getElementById('events-this-month').textContent = eventsThisMonth.toLocaleString();
+
+            // Update event charts
+            updateEventCharts(events);
+            
+            // Populate upcoming events table
+            populateUpcomingEventsTable(events);
+        }
+
+        // Load branches data from database
+        function loadBranchesData() {
+            fetch(API_BASE + '/branches')
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(function(branches) {
+                    processBranchesData(branches);
+                })
+                .catch(function(error) {
+                    console.error('Error loading branches data:', error);
+                    showError('branches', 'Failed to load branches data');
+                });
+        }
+
+        // Process and display branches data
+        function processBranchesData(branches) {
+            if (!branches || branches.length === 0) {
+                showError('branches', 'No branches data available');
+                return;
+            }
+
+            var totalBranches = branches.length;
+            var activeBranches = branches.filter(function(branch) {
+                return branch.member_count > 0;
+            }).length;
+            
+            var totalMembers = branches.reduce(function(sum, branch) {
+                return sum + (branch.member_count || 0);
+            }, 0);
+            
+            var avgMembersPerBranch = totalMembers / totalBranches;
+            
+            var topBranch = branches.reduce(function(max, branch) {
+                return (branch.member_count || 0) > (max.member_count || 0) ? branch : max;
+            }, branches[0]);
+
+            // Update UI
+            document.getElementById('total-branches').textContent = totalBranches.toLocaleString();
+            document.getElementById('branches-total').textContent = totalBranches.toLocaleString();
+            document.getElementById('active-branches').textContent = activeBranches.toLocaleString();
+            document.getElementById('avg-members-branch').textContent = Math.round(avgMembersPerBranch).toLocaleString();
+            document.getElementById('top-branch-members').textContent = (topBranch.member_count || 0).toLocaleString();
+            document.getElementById('top-branch-name').textContent = topBranch.name;
+
+            // Update branch charts
+            updateBranchCharts(branches);
+            
+            // Populate branch ranking table
+            populateBranchRankingTable(branches);
+        }
+
+        // Load alumni data from database
+        function loadAlumniData() {
+            fetch(API_BASE + '/alumni')
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(function(alumni) {
+                    processAlumniData(alumni);
+                })
+                .catch(function(error) {
+                    console.error('Error loading alumni data:', error);
+                    showError('alumni', 'Failed to load alumni data');
+                });
+        }
+
+        // Process and display alumni data
+        function processAlumniData(alumni) {
+            if (!alumni || alumni.length === 0) {
+                showError('alumni', 'No alumni data available');
+                return;
+            }
+
+            var totalAlumni = alumni.length;
+            var alumniThisYear = alumni.filter(function(alum) {
+                var gradDate = new Date(alum.graduation_date);
+                return gradDate.getFullYear() === new Date().getFullYear();
+            }).length;
+            
+            var employedAlumni = alumni.filter(function(alum) {
+                return alum.current_status === 'employed';
+            }).length;
+            
+            var employmentRate = totalAlumni > 0 ? (employedAlumni / totalAlumni) * 100 : 0;
+            
+            var graduationYears = alumni.map(function(alum) {
+                return new Date(alum.graduation_date).getFullYear();
+            });
+            var avgGraduationYear = graduationYears.reduce(function(sum, year) {
+                return sum + year;
+            }, 0) / graduationYears.length;
+
+            // Update UI
+            document.getElementById('total-alumni').textContent = totalAlumni.toLocaleString();
+            document.getElementById('alumni-total').textContent = totalAlumni.toLocaleString();
+            document.getElementById('alumni-this-year').textContent = alumniThisYear.toLocaleString();
+            document.getElementById('employment-rate').textContent = employmentRate.toFixed(1) + '%';
+            document.getElementById('avg-graduation-year').textContent = Math.round(avgGraduationYear).toString();
+
+            // Update alumni charts
+            updateAlumniCharts(alumni);
+        }
+
+        // Load news data from database
+        function loadNewsData() {
+            fetch(API_BASE + '/news')
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(function(news) {
+                    processNewsData(news);
+                })
+                .catch(function(error) {
+                    console.error('Error loading news data:', error);
+                    showError('news', 'Failed to load news data');
+                });
+        }
+
+        // Process and display news data
+        function processNewsData(news) {
+            if (!news || news.length === 0) {
+                showError('news', 'No news data available');
+                return;
+            }
+
+            var totalNews = news.length;
+            
+            var newsThisMonth = news.filter(function(item) {
+                var publishDate = new Date(item.publish_date);
+                var now = new Date();
+                return publishDate.getMonth() === now.getMonth() && publishDate.getFullYear() === now.getFullYear();
+            }).length;
+            
+            var authors = [...new Set(news.map(function(item) {
+                return item.author_id;
+            }))];
+            var activeAuthors = authors.length;
+            
+            var avgArticlesPerAuthor = totalNews / activeAuthors;
+
+            // Update UI
+            document.getElementById('total-news').textContent = totalNews.toLocaleString();
+            document.getElementById('news-this-month').textContent = newsThisMonth.toLocaleString();
+            document.getElementById('active-authors').textContent = activeAuthors.toLocaleString();
+            document.getElementById('avg-articles-author').textContent = avgArticlesPerAuthor.toFixed(1);
+
+            // Update news charts
+            updateNewsCharts(news);
+        }
+
+        // Initialize empty charts
+        function initializeCharts() {
+            // This function would initialize Chart.js instances
+            // Implementation depends on specific chart requirements
+            console.log('Charts initialized');
+        }
+
+        // Update system status information
+        function updateSystemStatus(startTime) {
+            var endTime = Date.now();
+            var responseTime = endTime - startTime;
+            
+            document.getElementById('db-status').textContent = 'Connected';
+            document.getElementById('db-status').className = 'status-value status-good';
+            
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+            document.getElementById('api-response').textContent = responseTime + 'ms';
+            document.getElementById('active-sessions').textContent = '1'; // Sample data
+            
+            lastUpdateTime = new Date();
+            showLoading(false);
+        }
+
+        // Show/hide loading overlay
+        function showLoading(show) {
+            var overlay = document.getElementById('loading-overlay');
+            overlay.style.display = show ? 'flex' : 'none';
+        }
+
+        // Show error message
+        function showError(section, message) {
+            console.error('Error in ' + section + ': ' + message);
+            // You could add visual error indicators here
+        }
+
+        // Update trend indicator
+        function updateTrend(elementId, change) {
+            var element = document.getElementById(elementId);
+            var trendClass = change > 0 ? 'trend-up' : (change < 0 ? 'trend-down' : 'trend-neutral');
+            var symbol = change > 0 ? '↗' : (change < 0 ? '↘' : '→');
+            
+            element.textContent = symbol + ' ' + Math.abs(change) + '% from last period';
+            element.className = 'stat-trend ' + trendClass;
+        }
+
+        // Refresh all data
+        function refreshAllData() {
+            showLoading(true);
+            loadAllDataFromDatabase();
+        }
+
+        // Show specific section
+        function showSection(sectionId) {
+            // Check access permissions
+            if (getAccessLevel(sectionId) === 'none') {
+                alert('Access denied: You do not have permission to view this section.');
+                return;
+            }
+
+            // Hide all sections
+            var sections = document.querySelectorAll('.content-section');
+            for (var i = 0; i < sections.length; i++) {
+                sections[i].classList.remove('active');
+            }
+            
+            // Remove active class from all nav items
+            var navItems = document.querySelectorAll('.nav-item');
+            for (var j = 0; j < navItems.length; j++) {
+                navItems[j].classList.remove('active');
+            }
+            
+            // Show selected section
+            document.getElementById(sectionId + '-section').classList.add('active');
+            
+            // Activate corresponding nav item
+            var activeNavItem = document.querySelector('.nav-item[data-section="' + sectionId + '"]');
+            if (activeNavItem) {
+                activeNavItem.classList.add('active');
+            }
+        }
+
+        // Export functions (placeholder implementations)
+        function exportOverviewData() {
+            alert('Exporting overview data...');
+            // Implementation would generate and download CSV/PDF
+        }
+
+        function exportUserData() {
+            alert('Exporting user data...');
+        }
+
+        function exportEventData() {
+            alert('Exporting event data...');
+        }
+
+        function exportBranchData() {
+            alert('Exporting branch data...');
+        }
+
+        function exportAlumniData() {
+            alert('Exporting alumni data...');
+        }
+
+        function exportNewsData() {
+            alert('Exporting news data...');
+        }
+
+        function downloadChart(chartId) {
+            alert('Downloading chart: ' + chartId);
+            // Implementation would export chart as image
+        }
+
+        // Placeholder functions for chart updates
+        function updateMemberGrowthChart() {
+            var period = document.getElementById('growth-period').value;
+            console.log('Updating member growth chart for period: ' + period);
+        }
+
+        function updateRegistrationChart() {
+            var year = document.getElementById('registration-year').value;
+            console.log('Updating registration chart for year: ' + year);
+        }
+
+        function updateEventsByTypeChart() {
+            var period = document.getElementById('event-type-period').value;
+            console.log('Updating events by type chart for period: ' + period);
+        }
+
+        function updateBranchActivityChart() {
+            var metric = document.getElementById('activity-metric').value;
+            console.log('Updating branch activity chart for metric: ' + metric);
+        }
+
+        function updateEmploymentChart() {
+            var filter = document.getElementById('employment-filter').value;
+            console.log('Updating employment chart with filter: ' + filter);
+        }
+
+        function updateNewsByBranchChart() {
+            var period = document.getElementById('news-period').value;
+            console.log('Updating news by branch chart for period: ' + period);
+        }
+
+        // Placeholder functions for data processing
+        function updateUserCharts(users) {
+            console.log('Updating user charts with', users.length, 'users');
+        }
+
+        function updateEventCharts(events) {
+            console.log('Updating event charts with', events.length, 'events');
+        }
+
+        function updateBranchCharts(branches) {
+            console.log('Updating branch charts with', branches.length, 'branches');
+        }
+
+        function updateAlumniCharts(alumni) {
+            console.log('Updating alumni charts with', alumni.length, 'alumni');
+        }
+
+        function updateNewsCharts(news) {
+            console.log('Updating news charts with', news.length, 'news items');
+        }
+
+        function populateRecentUsersTable(users) {
+            var tbody = document.getElementById('recent-users-table');
+            tbody.innerHTML = '';
+            
+            users.forEach(function(user) {
+                var row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.name || 'N/A'}</td>
+                    <td>${user.email || 'N/A'}</td>
+                    <td><span class="role-badge role-${user.role || 'member'}">${user.role || 'member'}</span></td>
+                    <td>${user.branch_name || 'N/A'}</td>
+                    <td>${user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}</td>
+                    <td><span class="status-badge status-${user.status || 'active'}">${user.status || 'active'}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function populateUpcomingEventsTable(events) {
+            var tbody = document.getElementById('upcoming-events-table');
+            tbody.innerHTML = '';
+            
+            var upcomingEvents = events.filter(function(event) {
+                return new Date(event.date) > new Date();
+            }).slice(0, 10);
+            
+            upcomingEvents.forEach(function(event) {
+                var row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${event.title || 'N/A'}</td>
+                    <td>${event.date ? new Date(event.date).toLocaleString() : 'N/A'}</td>
+                    <td>${event.event_type || 'N/A'}</td>
+                    <td>${event.branch_name || 'N/A'}</td>
+                    <td>${event.location || 'N/A'}</td>
+                    <td>${event.created_by_name || 'N/A'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function populateBranchRankingTable(branches) {
+            var tbody = document.getElementById('branch-ranking-table');
+            tbody.innerHTML = '';
+            
+            // Sort branches by member count
+            var sortedBranches = branches.sort(function(a, b) {
+                return (b.member_count || 0) - (a.member_count || 0);
+            });
+            
+            sortedBranches.forEach(function(branch, index) {
+                var row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>#${index + 1}</td>
+                    <td>${branch.name || 'N/A'}</td>
+                    <td>${branch.university || 'N/A'}</td>
+                    <td>${(branch.member_count || 0).toLocaleString()}</td>
+                    <td>${Math.round((branch.member_count || 0) * 0.7).toLocaleString()}</td> <!-- Estimated active -->
+                    <td>${(branch.alumni_count || 0).toLocaleString()}</td> <!-- Using alumni count as event proxy -->
+                    <td>${(branch.alumni_count || 0).toLocaleString()}</td> <!-- Alumni count -->
+                    <td>+${Math.round(Math.random() * 20)}%</td> <!-- Sample growth rate -->
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+</html>

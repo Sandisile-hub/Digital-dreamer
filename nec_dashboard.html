@@ -1,139 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEC Member Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .fade-in {
-            animation: fadeIn 0.3s ease-in;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .stat-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEC Member Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .fade-in {
+      animation: fadeIn 0.3s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .stat-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
-    <header class="bg-blue-900 text-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center space-x-4">
-                    <div class="w-10 h-10 bg-blue-700 rounded-lg flex items-center justify-center font-bold text-lg">
-                        NEC
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-bold">National Executive Committee</h1>
-                        <p class="text-blue-200 text-sm">Member Dashboard</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span class="text-blue-200">Welcome, John Smith</span>
-                    <div class="w-8 h-8 bg-blue-700 rounded-full flex items-center justify-center text-sm font-medium">
-                        JS
-                    </div>
-                </div>
-            </div>
+  <!-- Header -->
+  <header class="bg-blue-900 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center space-x-4">
+          <div class="w-10 h-10 bg-blue-700 rounded-lg flex items-center justify-center font-bold text-lg">
+            NEC
+          </div>
+          <div>
+            <h1 class="text-xl font-bold">National Executive Committee</h1>
+            <p class="text-blue-200 text-sm">Member Dashboard</p>
+          </div>
         </div>
-    </header>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Navigation Tabs -->
-        <div class="mb-8">
-            <nav class="flex space-x-8 border-b border-gray-200">
-                <button onclick="showTab('overview')" id="tab-overview" class="tab-button py-2 px-1 border-b-2 border-blue-500 text-blue-600 font-medium">
-                    National Overview
-                </button>
-                <button onclick="showTab('members')" id="tab-members" class="tab-button py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
-                    NEC Members
-                </button>
-                <button onclick="showTab('branches')" id="tab-branches" class="tab-button py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
-                    Branch Management
-                </button>
-                <button onclick="showTab('policies')" id="tab-policies" class="tab-button py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
-                    Policy Management
-                </button>
-            </nav>
+        <div class="flex items-center space-x-4">
+          <span class="text-blue-200">Welcome, John Smith</span>
+          <div class="w-8 h-8 bg-blue-700 rounded-full flex items-center justify-center text-sm font-medium">
+            JS
+          </div>
         </div>
+      </div>
+    </div>
+  </header>
 
-        <!-- National Overview Tab -->
-        <div id="overview-tab" class="tab-content fade-in">
-            <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="stat-card bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-blue-100 rounded-lg">
-                            <div class="w-6 h-6 bg-blue-600 rounded"></div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Total Branches</p>
-                            <p class="text-2xl font-bold text-gray-900">47</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-card bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-green-100 rounded-lg">
-                            <div class="w-6 h-6 bg-green-600 rounded"></div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Active Members</p>
-                            <p class="text-2xl font-bold text-gray-900">2,847</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-card bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-purple-100 rounded-lg">
-                            <div class="w-6 h-6 bg-purple-600 rounded"></div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Alumni Network</p>
-                            <p class="text-2xl font-bold text-gray-900">8,392</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="stat-card bg-white rounded-lg shadow p-6">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-orange-100 rounded-lg">
-                            <div class="w-6 h-6 bg-orange-600 rounded"></div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-600">Events This Month</p>
-                            <p class="text-2xl font-bold text-gray-900">23</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Activity & Top Performing Branches -->
-            <!-- (content continues with NEC Members, Branches, Policies, Modals, and JavaScript for interactions) -->
-        </div>
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Navigation Tabs -->
+    <div class="mb-8">
+      <nav class="flex space-x-8 border-b border-gray-200">
+        <button onclick="showTab('overview')" id="tab-overview"
+          class="tab-button py-2 px-1 border-b-2 border-blue-500 text-blue-600 font-medium">
+          National Overview
+        </button>
+        <button onclick="showTab('members')" id="tab-members"
+          class="tab-button py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
+          NEC Members
+        </button>
+        <button onclick="showTab('branches')" id="tab-branches"
+          class="tab-button py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
+          Branch Management
+        </button>
+        <button onclick="showTab('policies')" id="tab-policies"
+          class="tab-button py-2 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
+          Policy Management
+        </button>
+      </nav>
     </div>
 
-    <script>
-        // Tab switching and modal management logic
-        function showTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('border-blue-500', 'text-blue-600');
-                btn.classList.add('border-transparent', 'text-gray-500');
-            });
-            document.getElementById(tabName + '-tab').classList.remove('hidden');
-            const activeButton = document.getElementById('tab-' + tabName);
-            activeButton.classList.remove('border-transparent', 'text-gray-500');
-            activeButton.classList.add('border-blue-500', 'text-blue-600');
-        }
-        // ... other modal, branch, and policy handling functions ...
-    </script>
+    <!-- National Overview Tab -->
+    <div id="overview-tab" class="tab-content fade-in">
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="stat-card bg-white rounded-lg shadow p-6">
+          <p class="text-sm font-medium text-gray-600">Total Branches</p>
+          <p class="text-2xl font-bold text-gray-900">47</p>
+        </div>
+        <div class="stat-card bg-white rounded-lg shadow p-6">
+          <p class="text-sm font-medium text-gray-600">Active Members</p>
+          <p class="text-2xl font-bold text-gray-900">2,847</p>
+        </div>
+        <div class="stat-card bg-white rounded-lg shadow p-6">
+          <p class="text-sm font-medium text-gray-600">Alumni Network</p>
+          <p class="text-2xl font-bold text-gray-900">8,392</p>
+        </div>
+        <div class="stat-card bg-white rounded-lg shadow p-6">
+          <p class="text-sm font-medium text-gray-600">Events This Month</p>
+          <p class="text-2xl font-bold text-gray-900">23</p>
+        </div>
+      </div>
+      <p class="text-gray-600">This is the national overview section with key stats.</p>
+    </div>
+
+    <!-- NEC Members Tab -->
+    <div id="members-tab" class="tab-content hidden fade-in">
+      <h2 class="text-xl font-bold mb-4">NEC Members</h2>
+      <table class="min-w-full bg-white border">
+        <thead>
+          <tr class="bg-gray-100 text-left">
+            <th class="py-2 px-4 border">Name</th>
+            <th class="py-2 px-4 border">Position</th>
+            <th class="py-2 px-4 border">Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="py-2 px-4 border">John Smith</td>
+            <td class="py-2 px-4 border">President</td>
+            <td class="py-2 px-4 border">john@example.com</td>
+          </tr>
+          <tr>
+            <td class="py-2 px-4 border">Mary Johnson</td>
+            <td class="py-2 px-4 border">Secretary</td>
+            <td class="py-2 px-4 border">mary@example.com</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Branch Management Tab -->
+    <div id="branches-tab" class="tab-content hidden fade-in">
+      <h2 class="text-xl font-bold mb-4">Branch Management</h2>
+      <ul class="bg-white rounded-lg shadow divide-y divide-gray-200">
+        <li class="px-4 py-2">Durban Branch – 120 Members</li>
+        <li class="px-4 py-2">Johannesburg Branch – 200 Members</li>
+        <li class="px-4 py-2">Cape Town Branch – 150 Members</li>
+      </ul>
+    </div>
+
+    <!-- Policy Management Tab -->
+    <div id="policies-tab" class="tab-content hidden fade-in">
+      <h2 class="text-xl font-bold mb-4">Policy Management</h2>
+      <div class="bg-white rounded-lg shadow p-4">
+        <p class="text-gray-600">Here you can manage policies and documents for the NEC.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    function showTab(tabName) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('border-blue-500', 'text-blue-600');
+        btn.classList.add('border-transparent', 'text-gray-500');
+      });
+
+      // Show selected tab
+      document.getElementById(tabName + '-tab').classList.remove('hidden');
+
+      // Highlight active button
+      const activeButton = document.getElementById('tab-' + tabName);
+      activeButton.classList.remove('border-transparent', 'text-gray-500');
+      activeButton.classList.add('border-blue-500', 'text-blue-600');
+    }
+  </script>
 </body>
 </html>

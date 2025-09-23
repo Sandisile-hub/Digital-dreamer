@@ -4,7 +4,7 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
@@ -481,7 +481,10 @@ app.get('/api/dashboard/stats', function(req, res) {
 app.use('/api/*', function(req, res) {
   res.status(404).json({ error: 'API route not found' });
 });
-
+// Dashboard route
+app.get('/dashboard', function(req, res) {
+  res.sendFile(path.join(__dirname, 'public', 'gnm_dashboard.html'));
+});
 // Handle all other routes - serve signin page
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'signin.html'));
@@ -494,7 +497,7 @@ app.use(function(err, req, res, next) {
 });
 
 // Start server
-app.listen(PORT,'0.0.0.0' ,function() {
+app.listen(PORT, function() {
   console.log('Server started on port ' + PORT);
   console.log('Website: http://localhost:' + PORT);
   console.log('API: http://localhost:' + PORT + '/api');

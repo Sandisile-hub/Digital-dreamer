@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NaTeSA Alumni Connect - Stay Connected, Stay Informed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .news-ticker {
+            animation: scroll 30s linear infinite;
+        }
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .floating-card {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Header with Live News Ticker -->
+    <header class="gradient-bg shadow-2xl relative overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-10"></div>
+        <div class="relative z-10">
+            <!-- News Ticker -->
+            <div class="bg-yellow-400 text-black py-2 overflow-hidden">
+                <div class="news-ticker whitespace-nowrap">
+                    🎉 NaTeSA Annual Conference 2024 - March 15-17 | 🏆 Alumni Achievement Awards nominations open | 📚 New scholarship program launched | 🌟 Join the mentorship network
+                </div>
+            </div>
+            
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div class="flex flex-col lg:flex-row justify-between items-center space-y-4 lg:space-y-0">
+                    <div class="flex items-center space-x-4">
+                        <div class="h-16 w-16 glass-effect rounded-2xl flex items-center justify-center">
+                            <svg class="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="text-3xl font-bold text-white">NaTeSA Alumni Connect</h1>
+                            <p class="text-purple-100">Stay Connected • Stay Informed • Stay Engaged</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-6">
+                        <div class="text-right">
+                            <p class="text-white font-semibold">Welcome back, Alex!</p>
+                            <p class="text-purple-100 text-sm">Class of 2019 • Software Engineer</p>
+                        </div>
+                        <div class="relative">
+                            <div class="h-12 w-12 glass-effect rounded-full flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">AJ</span>
+                            </div>
+                            <div class="absolute -top-1 -right-1 h-4 w-4 bg-green-400 rounded-full pulse-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Quick Stats Dashboard -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-xl p-6 text-white card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-100 text-sm font-medium">Active Alumni</p>
+                        <p class="text-3xl font-bold">2,847</p>
+                        <p class="text-blue-100 text-xs">↗️ +12% this month</p>
+                    </div>
+                    <div class="h-12 w-12 bg-white/20 rounded-xl flex items-center justify-center">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-xl p-6 text-white card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-100 text-sm font-medium">Active Branches</p>
+                        <p class="text-3xl font-bold">47</p>
+                        <p class="text-green-100 text-xs">🌍 Nationwide</p>
+                    </div>
+                    <div class="h-12 w-12 bg-white/20 rounded-xl flex items-center justify-center">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-xl p-6 text-white card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-purple-100 text-sm font-medium">Upcoming Events</p>
+                        <p class="text-3xl font-bold">8</p>
+                        <p class="text-purple-100 text-xs">📅 This month</p>
+                    </div>
+                    <div class="h-12 w-12 bg-white/20 rounded-xl flex items-center justify-center">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-xl p-6 text-white card-hover">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-orange-100 text-sm font-medium">Job Opportunities</p>
+                        <p class="text-3xl font-bold">156</p>
+                        <p class="text-orange-100 text-xs">💼 Available now</p>
+                    </div>
+                    <div class="h-12 w-12 bg-white/20 rounded-xl flex items-center justify-center">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m8 0H8m8 0v6a2 2 0 01-2 2H10a2 2 0 01-2-2V6m8 0V4a2 2 0 00-2-2H8a2 2 0 00-2 2v2"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Live Activity Feed -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xl font-bold text-white flex items-center">
+                                <div class="h-3 w-3 bg-green-400 rounded-full pulse-dot mr-3"></div>
+                                Live NaTeSA Updates
+                            </h3>
+                            <span class="text-indigo-100 text-sm">Real-time</span>
+                        </div>
+                    </div>
+                    <div class="p-6 max-h-96 overflow-y-auto" id="activityFeed">
+                        <!-- Activity items will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Branch Spotlight -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                            🌟 Branch Spotlight
+                            <span class="ml-2 text-sm bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Featured</span>
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="branchSpotlight">
+                            <!-- Branch cards will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alumni Success Stories -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-xl font-bold text-gray-900">🏆 Alumni Success Stories</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-6" id="successStories">
+                            <!-- Success stories will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-8">
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-2xl shadow-xl p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">⚡ Quick Actions</h3>
+                    <div class="space-y-3">
+                        <button class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-4 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 flex items-center justify-center space-x-2 card-hover">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            <span>Update Profile</span>
+                        </button>
+                        <button class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 flex items-center justify-center space-x-2 card-hover">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <span>Find Alumni</span>
+                        </button>
+                        <button class="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-3 px-4 rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all duration-300 flex items-center justify-center space-x-2 card-hover">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m8 0H8m8 0v6a2 2 0 01-2 2H10a2 2 0 01-2-2V6m8 0V4a2 2 0 00-2-2H8a2 2 0 00-2 2v2"></path>
+                            </svg>
+                            <span>Job Board</span>
+                        </button>
+                        <button class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 px-4 rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-300 flex items-center justify-center space-x-2 card-hover">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            </svg>
+                            <span>Donate</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upcoming Events -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden floating-card">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-xl font-bold text-gray-900">📅 Upcoming Events</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4" id="upcomingEvents">
+                            <!-- Events will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alumni Network Stats -->
+                <div class="bg-gradient-to-br from-teal-500 to-cyan-600 rounded-2xl shadow-xl p-6 text-white">
+                    <h3 class="text-xl font-bold mb-4">🌐 Network Insights</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-teal-100">Your Connections</span>
+                            <span class="font-bold text-2xl">247</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-teal-100">Profile Views</span>
+                            <span class="font-bold text-2xl">89</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-teal-100">Mentorship Matches</span>
+                            <span class="font-bold text-2xl">12</span>
+                        </div>
+                        <button class="w-full bg-white/20 hover:bg-white/30 text-white py-2 px-4 rounded-lg transition-colors mt-4">
+                            View Full Analytics
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Weather Widget (Fun Addition) -->
+                <div class="bg-gradient-to-br from-sky-400 to-blue-500 rounded-2xl shadow-xl p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="text-lg font-semibold">Weather at HQ</h4>
+                            <p class="text-sky-100 text-sm">Abuja, Nigeria</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-3xl font-bold">28°C</div>
+                            <div class="text-sky-100 text-sm">☀️ Sunny</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Section - Interactive Map -->
+        <div class="mt-12 bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-xl font-bold text-gray-900">🗺️ NaTeSA Global Presence</h3>
+                <p class="text-gray-600 text-sm">Interactive map showing active branches and alumni distribution</p>
+            </div>
+            <div class="p-6">
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-8 text-center">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-blue-600">47</div>
+                            <div class="text-sm text-gray-600">Active Branches</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-green-600">36</div>
+                            <div class="text-sm text-gray-600">States Covered</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-purple-600">2,847</div>
+                            <div class="text-sm text-gray-600">Total Alumni</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-orange-600">156</div>
+                            <div class="text-sm text-gray-600">Countries Reached</div>
+                        </div>
+                    </div>
+                    <button class="mt-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">
+                        Explore Interactive Map
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for the dashboard
+        const activities = [
+            { type: 'event', message: 'Lagos Branch hosting Tech Innovation Summit', time: '2 minutes ago', icon: '🎯', color: 'blue' },
+            { type: 'achievement', message: 'Sarah Okafor (Class 2018) promoted to Senior Manager at Microsoft', time: '15 minutes ago', icon: '🏆', color: 'green' },
+            { type: 'news', message: 'New scholarship program launched for current students', time: '1 hour ago', icon: '📚', color: 'purple' },
+            { type: 'branch', message: 'Kano Branch reached 200 active members milestone', time: '2 hours ago', icon: '🎉', color: 'orange' },
+            { type: 'job', message: '25 new job opportunities posted in the alumni job board', time: '3 hours ago', icon: '💼', color: 'indigo' },
+            { type: 'mentorship', message: '15 new mentorship connections made this week', time: '5 hours ago', icon: '🤝', color: 'teal' },
+            { type: 'donation', message: 'Alumni fundraising campaign reached ₦2.5M for student support', time: '1 day ago', icon: '💝', color: 'pink' },
+            { type: 'graduation', message: '150 new graduates joined the alumni network', time: '2 days ago', icon: '🎓', color: 'yellow' }
+        ];
+
+        const branches = [
+            { name: 'Lagos Branch', members: 342, recent: 'Tech Innovation Summit - March 20', image: '🏙️', growth: '+15%' },
+            { name: 'Abuja Branch', members: 298, recent: 'Leadership Workshop - March 18', image: '🏛️', growth: '+12%' },
+            { name: 'Kano Branch', members: 201, recent: 'Community Outreach Program', image: '🌾', growth: '+8%' },
+            { name: 'Port Harcourt', members: 187, recent: 'Industry Networking Event', image: '🛢️', growth: '+10%' }
+        ];
+
+        const successStories = [
+            {
+                name: 'Dr. Amina Hassan',
+                class: '2015',
+                achievement: 'Founded successful EdTech startup valued at $50M',
+                image: 'AH',
+                company: 'EduNigeria',
+                impact: 'Impacting 100k+ students across West Africa'
+            },
+            {
+                name: 'Chidi Okonkwo',
+                class: '2017',
+                achievement: 'Lead Engineer at Google, published 15 research papers',
+                image: 'CO',
+                company: 'Google',
+                impact: 'AI research advancing healthcare in Africa'
+            },
+            {
+                name: 'Fatima Abdullahi',
+                class: '2016',
+                achievement: 'Youngest VP at First Bank Nigeria, Forbes 30 Under 30',
+                image: 'FA',
+                company: 'First Bank',
+                impact: 'Leading financial inclusion initiatives'
+            }
+        ];
+
+        const upcomingEvents = [
+            { title: 'Annual Alumni Conference', date: 'Mar 15-17', location: 'Abuja', type: 'conference' },
+            { title: 'Tech Career Fair', date: 'Mar 22', location: 'Lagos', type: 'career' },
+            { title: 'Mentorship Mixer', date: 'Mar 28', location: 'Virtual', type: 'networking' },
+            { title: 'Alumni Awards Gala', date: 'Apr 5', location: 'Abuja', type: 'awards' },
+            { title: 'Startup Pitch Competition', date: 'Apr 12', location: 'Lagos', type: 'competition' }
+        ];
+
+        // Populate activity feed
+        function populateActivityFeed() {
+            const feed = document.getElementById('activityFeed');
+            feed.innerHTML = '';
+
+            activities.forEach((activity, index) => {
+                const item = document.createElement('div');
+                item.className = 'flex items-start space-x-4 p-4 hover:bg-gray-50 rounded-xl transition-colors';
+                item.innerHTML = `
+                    <div class="flex-shrink-0">
+                        <div class="h-10 w-10 bg-${activity.color}-100 rounded-full flex items-center justify-center">
+                            <span class="text-lg">${activity.icon}</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">${activity.message}</p>
+                        <p class="text-xs text-gray-500 mt-1">${activity.time}</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="h-2 w-2 bg-${activity.color}-400 rounded-full"></div>
+                    </div>
+                `;
+                feed.appendChild(item);
+            });
+        }
+
+        // Populate branch spotlight
+        function populateBranchSpotlight() {
+            const container = document.getElementById('branchSpotlight');
+            container.innerHTML = '';
+
+            branches.forEach(branch => {
+                const card = document.createElement('div');
+                card.className = 'bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 card-hover cursor-pointer';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="text-3xl">${branch.image}</div>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">${branch.growth}</span>
+                    </div>
+                    <h4 class="font-bold text-gray-900 mb-2">${branch.name}</h4>
+                    <p class="text-sm text-gray-600 mb-3">${branch.members} active members</p>
+                    <p class="text-xs text-gray-500">${branch.recent}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Populate success stories
+        function populateSuccessStories() {
+            const container = document.getElementById('successStories');
+            container.innerHTML = '';
+
+            successStories.forEach(story => {
+                const card = document.createElement('div');
+                card.className = 'bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 card-hover';
+                card.innerHTML = `
+                    <div class="flex items-start space-x-4">
+                        <div class="h-16 w-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                            ${story.image}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <h4 class="font-bold text-gray-900">${story.name}</h4>
+                                <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full">Class of ${story.class}</span>
+                            </div>
+                            <p class="text-sm text-gray-700 mb-2">${story.achievement}</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-indigo-600 font-medium">${story.company}</span>
+                                <span class="text-xs text-gray-500">${story.impact}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Populate upcoming events
+        function populateUpcomingEvents() {
+            const container = document.getElementById('upcomingEvents');
+            container.innerHTML = '';
+
+            upcomingEvents.forEach(event => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer';
+                
+                const typeIcons = {
+                    conference: '🎤',
+                    career: '💼',
+                    networking: '🤝',
+                    awards: '🏆',
+                    competition: '🚀'
+                };
+
+                item.innerHTML = `
+                    <div class="text-2xl">${typeIcons[event.type]}</div>
+                    <div class="flex-1">
+                        <h5 class="font-medium text-gray-900 text-sm">${event.title}</h5>
+                        <p class="text-xs text-gray-500">${event.date} • ${event.location}</p>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Add real-time updates simulation
+        function simulateRealTimeUpdates() {
+            setInterval(() => {
+                // Add a new activity every 30 seconds
+                const newActivity = {
+                    type: 'live',
+                    message: 'Live update: New alumni connection made',
+                    time: 'Just now',
+                    icon: '⚡',
+                    color: 'yellow'
+                };
+                
+                activities.unshift(newActivity);
+                if (activities.length > 10) activities.pop();
+                populateActivityFeed();
+            }, 30000);
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            populateActivityFeed();
+            populateBranchSpotlight();
+            populateSuccessStories();
+            populateUpcomingEvents();
+            simulateRealTimeUpdates();
+        });
+
+        // Add click handlers for interactive elements
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.card-hover')) {
+                // Add subtle click animation
+                const card = e.target.closest('.card-hover');
+                card.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    card.style.transform = '';
+                }, 150);
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'983d3c71f4830f09',t:'MTc1ODY2NDAwMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

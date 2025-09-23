@@ -1,1179 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BEC Dashboard</title>
-    <style>
-        :root {
-            --primary: #1a365d;
-            --secondary: #2b6cb0;
-            --accent: #3182ce;
-            --light: #f7fafc;
-            --dark: #2d3748;
-            --success: #38a169;
-            --warning: #d69e2e;
-            --info: #4299e1;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-        }
-        
-        .dashboard-container {
-            display: flex;
-            min-height: 100vh;
-        }
-        
-        /* Sidebar Styles */
-        .sidebar {
-            width: 250px;
-            background: linear-gradient(to bottom, var(--primary), #2c5282);
-            color: white;
-            padding: 20px 0;
-            transition: all 0.3s;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-        }
-        
-        .sidebar-header {
-            padding: 0 20px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            text-align: center;
-        }
-        
-        .sidebar-header h2 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-        
-        .sidebar-header p {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        
-        .sidebar-menu {
-            list-style: none;
-            padding: 20px 0;
-        }
-        
-        .sidebar-menu li {
-            padding: 12px 20px;
-            border-left: 4px solid transparent;
-            transition: all 0.3s;
-            cursor: pointer;
-            margin: 5px 0;
-        }
-        
-        .sidebar-menu li.active {
-            background: rgba(255,255,255,0.1);
-            border-left: 4px solid var(--accent);
-        }
-        
-        .sidebar-menu li:hover {
-            background: rgba(255,255,255,0.05);
-            border-left: 4px solid var(--accent);
-        }
-        
-        .sidebar-menu a {
-            color: white;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            font-weight: 500;
-        }
-        
-        .sidebar-menu i {
-            margin-right: 12px;
-            font-size: 1.1rem;
-            width: 20px;
-            text-align: center;
-        }
-        
-        /* Main Content Styles */
-        .main-content {
-            flex: 1;
-            padding: 25px;
-            overflow-y: auto;
-            background-color: #f7fafc;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .header h1 {
-            color: var(--primary);
-            font-size: 1.8rem;
-            font-weight: 600;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            background: white;
-            padding: 8px 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        
-        .user-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-            border: 2px solid var(--secondary);
-        }
-        
-        /* Dashboard Cards */
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-top: 4px solid var(--secondary);
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .card-title {
-            font-size: 1.1rem;
-            color: var(--primary);
-            font-weight: 600;
-        }
-        
-        .card-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.4rem;
-            background: var(--secondary);
-        }
-        
-        .card-icon.members {
-            background: linear-gradient(135deg, var(--secondary), #4299e1);
-        }
-        
-        .card-icon.events {
-            background: linear-gradient(135deg, var(--success), #48bb78);
-        }
-        
-        .card-icon.alumni {
-            background: linear-gradient(135deg, var(--info), #63b3ed);
-        }
-        
-        .card-icon.committee {
-            background: linear-gradient(135deg, var(--accent), #4c8bf5);
-        }
-        
-        .card-value {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--primary);
-        }
-        
-        .card-desc {
-            font-size: 0.9rem;
-            color: #718096;
-        }
-        
-        /* Table Styles */
-        .table-container {
-            background: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
-            overflow-x: auto;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .table-title {
-            font-size: 1.3rem;
-            color: var(--primary);
-            font-weight: 600;
-        }
-        
-        .btn {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn-primary {
-            background: var(--secondary);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #2c5aa0;
-            transform: translateY(-2px);
-        }
-        
-        .btn-danger {
-            background: #e53e3e;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #c53030;
-            transform: translateY(-2px);
-        }
-        
-        .btn-warning {
-            background: var(--warning);
-            color: white;
-        }
-        
-        .btn-warning:hover {
-            background: #b7791f;
-            transform: translateY(-2px);
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        th, td {
-            padding: 14px 16px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        th {
-            background: #f7fafc;
-            font-weight: 600;
-            color: var(--primary);
-            font-size: 0.95rem;
-        }
-        
-        tr:hover {
-            background: #f7fafc;
-        }
-        
-        .action-btns {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 0.85rem;
-        }
-        
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        
-        .status-badge.active {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-        
-        .status-badge.graduating {
-            background: #fef5e7;
-            color: #744210;
-        }
-        
-        .status-badge.alumni {
-            background: #bee3f8;
-            color: #1a365d;
-        }
-        
-        .status-badge.member {
-            background: #e9d8fd;
-            color: #44337a;
-        }
-        
-        .status-badge.bec {
-            background: #fed7d7;
-            color: #742a2a;
-        }
-        
-        .status-badge.nec {
-            background: #feebc8;
-            color: #744210;
-        }
-        
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background: white;
-            width: 90%;
-            max-width: 600px;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            max-height: 90vh;
-            overflow-y: auto;
-            border-top: 4px solid var(--secondary);
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .modal-title {
-            font-size: 1.3rem;
-            color: var(--primary);
-            font-weight: 600;
-        }
-        
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #718096;
-            transition: color 0.3s;
-        }
-        
-        .close-modal:hover {
-            color: var(--primary);
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #4a5568;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        
-        .form-control:focus {
-            border-color: var(--secondary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
-        }
-        
-        /* Page Sections */
-        .page-section {
-            display: none;
-        }
-        
-        .page-section.active {
-            display: block;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .dashboard-container {
-                flex-direction: column;
-            }
-            
-            .sidebar {
-                width: 100%;
-                height: auto;
-            }
-            
-            .sidebar-menu {
-                display: flex;
-                overflow-x: auto;
-                padding: 10px 0;
-            }
-            
-            .sidebar-menu li {
-                border-left: none;
-                border-bottom: 4px solid transparent;
-                white-space: nowrap;
-                padding: 10px 15px;
-            }
-            
-            .sidebar-menu li.active {
-                border-left: none;
-                border-bottom: 4px solid var(--accent);
-            }
-            
-            .sidebar-menu li:hover {
-                border-left: none;
-                border-bottom: 4px solid var(--accent);
-            }
-            
-            .main-content {
-                padding: 15px;
-            }
-            
-            .dashboard-cards {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-            
-            .action-btns {
-                flex-direction: column;
-            }
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BEC Dashboard</title>
+  <style>
+    /* keep your CSS styles same as before */
+    /* I shortened here but your previous CSS can stay exactly as-is */
+    
+    :root {
+      --primary: #1a365d;
+      --secondary: #2b6cb0;
+      --accent: #3182ce;
+      --light: #f7fafc;
+      --dark: #2d3748;
+      --success: #38a169;
+      --warning: #d69e2e;
+      --info: #4299e1;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background-color: #f5f7fa;
+      color: #333;
+    }
+
+    /* modal for institution selection */
+    .institution-modal {
+      display: flex;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0,0,0,0.5);
+      z-index: 2000;
+    }
+
+    .institution-box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .institution-box h2 {
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+
+    .institution-box select, .institution-box button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .institution-box button {
+      background: var(--secondary);
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+
+    .institution-box button:hover {
+      background: #234e87;
+    }
+  </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h2>NaTeSA</h2>
-                <p>BEC Dashboard</p>
-                <p id="branch-name">University of Zululand Branch</p>
-            </div>
-            <ul class="sidebar-menu">
-                <li class="active" data-page="dashboard"><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li data-page="members"><a href="#"><i class="fas fa-users"></i> Member Management</a></li>
-                <li data-page="events"><a href="#"><i class="fas fa-calendar-alt"></i> Events</a></li>
-                <li data-page="alumni"><a href="#"><i class="fas fa-user-graduate"></i> Alumni</a></li>
-                <li data-page="statistics"><a href="#"><i class="fas fa-chart-bar"></i> Statistics</a></li>
-                <li data-page="settings"><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-                <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-            </ul>
-        </div>
-        
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="header">
-                <h1 id="page-title">BEC Dashboard</h1>
-                <div class="user-info">
-                    <img src="https://ui-avatars.com/api/?name=BEC+Member&background=2b6cb0&color=fff" alt="User">
-                    <div>
-                        <div id="user-name">BEC Member</div>
-                        <div id="user-role" style="font-size: 0.8rem; color: #718096;">Branch Executive Committee</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Dashboard Page -->
-            <div id="dashboard" class="page-section active">
-                <!-- Dashboard Cards -->
-                <div class="dashboard-cards">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Total Members</div>
-                            <div class="card-icon members">
-                                <i class="fas fa-users"></i>
-                            </div>
-                        </div>
-                        <div class="card-value" id="total-members">145</div>
-                        <div class="card-desc">Active members in your branch</div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Upcoming Events</div>
-                            <div class="card-icon events">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                        </div>
-                        <div class="card-value" id="upcoming-events">7</div>
-                        <div class="card-desc">Events scheduled this month</div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Alumni</div>
-                            <div class="card-icon alumni">
-                                <i class="fas fa-user-graduate"></i>
-                            </div>
-                        </div>
-                        <div class="card-value" id="total-alumni">89</div>
-                        <div class="card-desc">Graduated members</div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">BEC Committee</div>
-                            <div class="card-icon committee">
-                                <i class="fas fa-user-tie"></i>
-                            </div>
-                        </div>
-                        <div class="card-value" id="bec-members">12</div>
-                        <div class="card-desc">Committee members</div>
-                    </div>
-                </div>
-                
-                <!-- Welcome message for dashboard -->
-                <div class="table-container">
-                    <div class="table-header">
-                        <div class="table-title">Welcome to Your Dashboard</div>
-                    </div>
-                    <p>This is your central hub for managing the NaTeSA branch. Use the navigation menu to access specific sections:</p>
-                    <ul style="margin: 15px 0; padding-left: 20px;">
-                        <li><strong>Member Management</strong> - View and manage all members</li>
-                        <li><strong>Events</strong> - View and manage upcoming events</li>
-                        <li><strong>Alumni</strong> - Manage graduated members</li>
-                        <li><strong>Statistics</strong> - View branch performance metrics</li>
-                        <li><strong>Settings</strong> - Configure branch settings</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <!-- Member Management Page -->
-            <div id="members" class="page-section">
-                <div class="table-container">
-                    <div class="table-header">
-                        <div class="table-title">Recent Members</div>
-                        <button class="btn btn-primary" id="add-member-btn-page">
-                            <i class="fas fa-plus"></i> Add Member
-                        </button>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Institution</th>
-                                <th>Role</th>
-                                <th>Join Date</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="members-management-table-body">
-                            <!-- Members will be populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Events Page -->
-            <div id="events" class="page-section">
-                <div class="table-container">
-                    <div class="table-header">
-                        <div class="table-title">Upcoming Events</div>
-                        <button class="btn btn-primary" id="add-event-btn-page">
-                            <i class="fas fa-plus"></i> Add Event
-                        </button>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Event Name</th>
-                                <th>Date</th>
-                                <th>Type</th>
-                                <th>Location</th>
-                                <th>Attendees</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="events-management-table-body">
-                            <!-- Events will be populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Alumni Page -->
-            <div id="alumni" class="page-section">
-                <div class="table-container">
-                    <div class="table-header">
-                        <div class="table-title">Alumni Management</div>
-                        <button class="btn btn-primary" id="add-alumni-btn">
-                            <i class="fas fa-plus"></i> Add Alumni
-                        </button>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Graduation Year</th>
-                                <th>Degree</th>
-                                <th>Current Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="alumni-table-body">
-                            <!-- Alumni will be populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Statistics Page -->
-            <div id="statistics" class="page-section">
-                <div class="dashboard-cards">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Branch Statistics</div>
-                            <div class="card-icon members">
-                                <i class="fas fa-chart-bar"></i>
-                            </div>
-                        </div>
-                        <div class="card-value">University of Zululand</div>
-                        <div class="card-desc">Your branch statistics</div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Member Growth</div>
-                            <div class="card-icon events">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                        </div>
-                        <div class="card-value">+12%</div>
-                        <div class="card-desc">This semester</div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Event Participation</div>
-                            <div class="card-icon alumni">
-                                <i class="fas fa-chart-pie"></i>
-                            </div>
-                        </div>
-                        <div class="card-value">78%</div>
-                        <div class="card-desc">Average attendance</div>
-                    </div>
-                </div>
-                
-                <div class="table-container">
-                    <div class="table-header">
-                        <div class="table-title">Branch Comparison</div>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Branch</th>
-                                <th>Members</th>
-                                <th>Alumni</th>
-                                <th>Events This Month</th>
-                                <th>Growth</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>University of Zululand</td>
-                                <td>145</td>
-                                <td>89</td>
-                                <td>4</td>
-                                <td>+12%</td>
-                            </tr>
-                            <tr>
-                                <td>Mangosuthu University of Technology</td>
-                                <td>120</td>
-                                <td>75</td>
-                                <td>3</td>
-                                <td>+8%</td>
-                            </tr>
-                            <tr>
-                                <td>Durban University of Technology</td>
-                                <td>165</td>
-                                <td>102</td>
-                                <td>5</td>
-                                <td>+15%</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
-            <!-- Settings Page -->
-            <div id="settings" class="page-section">
-                <div class="table-container">
-                    <div class="table-header">
-                        <div class="table-title">Branch Settings</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="branch-name-setting">Branch Name</label>
-                        <input type="text" class="form-control" id="branch-name-setting" value="University of Zululand">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="branch-contact">Contact Email</label>
-                        <input type="email" class="form-control" id="branch-contact" value="natesa.zululand@email.com">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="branch-description">Description</label>
-                        <textarea class="form-control" id="branch-description" rows="3">NaTeSA University of Zululand Branch - Promoting academic excellence and leadership</textarea>
-                    </div>
-                    <div class="form-group">
-                        <button class="btn btn-primary">Save Settings</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+  <!-- Institution Selection Modal -->
+  <div class="institution-modal" id="institution-modal">
+    <div class="institution-box">
+      <h2>Select Your Institution</h2>
+      <select id="institution-select">
+        <option value="">-- Select University --</option>
+        <option value="ukzn">University of KwaZulu-Natal (UKZN)</option>
+        <option value="uct">University of Cape Town (UCT)</option>
+        <option value="wits">University of the Witwatersrand (Wits)</option>
+        <option value="dut">Durban University of Technology (DUT)</option>
+        <option value="unisa">University of South Africa (UNISA)</option>
+        <option value="nwu">North West University (NWU)</option>
+        <option value="ru">Rhodes University (RU)</option>
+        <option value="cput">Cape Penisula University of Technology (CPUT)</option>
+        <option value="uj">University Of Johannesburg (UJ)</option>
+        <option value="up">University Of Pretoria (UP)</option>
+        <option value="tut">Tshwane University Of Technology (TUT)</option>
+        <option value="cut">Central University Of Technology (CUT)</option>
+        <option value="ufs">University Of The Free State (UFS)</option>
+        <option value="wsu">Walter Sisulu University(WSU)</option>
+        <option value="spu">Sol Plaatje (SPU)</option>
+        <option value="unizulu">University of Zululand (Unizulu)</option>
+        <option value="mut">Mangosuthu University Of Technology (MUT)</option>
+        <option value="ufh">Fort Hare (UFH)</option>
+        <option value="nmu">Nelson Mandela University (NMU)</option>
+        <option value="ump">University of Mpumalanga (UMP)</option>
+        <option value="ul">University of Limpopo (UL)</option>
+        <option value="vut">Vaal University Of Technology (VUT)</option>
+      </select>
+      <button id="confirm-institution">Confirm</button>
     </div>
-    
-    <!-- Add Member Modal -->
-    <div class="modal" id="add-member-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">Add New Member</div>
-                <button class="close-modal">&times;</button>
-            </div>
-            <form id="add-member-form">
-                <div class="form-group">
-                    <label class="form-label" for="member-name">Full Name</label>
-                    <input type="text" class="form-control" id="member-name" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="member-email">Email</label>
-                    <input type="email" class="form-control" id="member-email" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="member-phone">Phone</label>
-                    <input type="tel" class="form-control" id="member-phone">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="member-institution">Institution</label>
-                    <select class="form-control" id="member-institution" required>
-                        <option value="">Select Institution</option>
-                        <option value="unizulu">University of Zululand</option>
-                        <option value="mut">Mangosuthu University of Technology</option>
-                        <option value="dut">Durban University of Technology</option>
-                        <option value="uct">University of Cape Town</option>
-                        <option value="wits">University of the Witwatersrand</option>
-                        <option value="ukzn">University of KwaZulu-Natal</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="member-role">Role</label>
-                    <select class="form-control" id="member-role" required>
-                        <option value="">Select Role</option>
-                        <option value="member">General Member</option>
-                        <option value="bec">BEC Member</option>
-                        <option value="nec">NEC Member</option>
-                        <option value="alumni">Alumni</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="member-course">Course/Program</label>
-                    <input type="text" class="form-control" id="member-course">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="member-year">Year of Study</label>
-                    <select class="form-control" id="member-year">
-                        <option value="1">1st Year</option>
-                        <option value="2">2nd Year</option>
-                        <option value="3">3rd Year</option>
-                        <option value="4">4th Year</option>
-                        <option value="5">5th Year+</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Add Member</button>
-                    <button type="button" class="btn btn-danger close-modal">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Add Event Modal -->
-    <div class="modal" id="add-event-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">Add New Event</div>
-                <button class="close-modal">&times;</button>
-            </div>
-            <form id="add-event-form">
-                <div class="form-group">
-                    <label class="form-label" for="event-title">Event Title</label>
-                    <input type="text" class="form-control" id="event-title" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="event-date">Date</label>
-                    <input type="date" class="form-control" id="event-date" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="event-time">Time</label>
-                    <input type="time" class="form-control" id="event-time" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="event-location">Location</label>
-                    <input type="text" class="form-control" id="event-location">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="event-type">Event Type</label>
-                    <select class="form-control" id="event-type">
-                        <option value="meeting">Meeting</option>
-                        <option value="workshop">Workshop</option>
-                        <option value="social">Social Event</option>
-                        <option value="academic">Academic</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="event-description">Description</label>
-                    <textarea class="form-control" id="event-description" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Add Event</button>
-                    <button type="button" class="btn btn-danger close-modal">Cancel</button>
-                </div>
-            </form>
-        </div>
+  </div>
+
+  <!-- Dashboard Container -->
+  <div class="dashboard-container" style="display:none" id="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h2>NaTeSA</h2>
+        <p>BEC Dashboard</p>
+        <p id="branch-name">[Branch Name]</p>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="active" data-page="dashboard"><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+        <li data-page="members"><a href="#"><i class="fas fa-users"></i> Member Management</a></li>
+        <li data-page="events"><a href="#"><i class="fas fa-calendar-alt"></i> Events</a></li>
+        <li data-page="alumni"><a href="#"><i class="fas fa-user-graduate"></i> Alumni</a></li>
+        <li data-page="statistics"><a href="#"><i class="fas fa-chart-bar"></i> Statistics</a></li>
+        <li data-page="settings"><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+        <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+      </ul>
     </div>
 
-    <script>
-        // Sample data - In a real application, this would come from a backend API
-        const sampleMembers = [
-            { id: 1, name: "Thando Mbeki", email: "thando.mbeki@email.com", institution: "University of Zululand", role: "member", joinDate: "2023-02-15", status: "Active" },
-            { id: 2, name: "Sipho Dlamini", email: "sipho.d@email.com", institution: "Mangosuthu University of Technology", role: "bec", joinDate: "2023-03-22", status: "Active" },
-            { id: 3, name: "Nomsa Khumalo", email: "n.khumalo@email.com", institution: "Durban University of Technology", role: "member", joinDate: "2023-01-10", status: "Active" },
-            { id: 4, name: "Bongani Ndlovu", email: "bongani.n@email.com", institution: "University of Zululand", role: "member", joinDate: "2022-11-05", status: "Graduating" },
-            { id: 5, name: "Zanele Mthembu", email: "zanele.m@email.com", institution: "University of Zululand", role: "nec", joinDate: "2023-04-18", status: "Active" }
-        ];
-        
-        const sampleEvents = [
-            { id: 1, title: "Monthly BEC Meeting", date: "2023-06-15", type: "Meeting", location: "Student Center", attendees: 12 },
-            { id: 2, title: "Career Guidance Workshop", date: "2023-06-22", type: "Workshop", location: "Library Auditorium", attendees: 45 },
-            { id: 3, title: "Academic Support Session", date: "2023-06-25", type: "Academic", location: "Room 204, Science Building", attendees: 30 },
-            { id: 4, title: "Social Braai", date: "2023-07-01", type: "Social", location: "Campus Green", attendees: 60 }
-        ];
-        
-        const sampleAlumni = [
-            { id: 1, name: "Lindiwe Zulu", email: "l.zulu@email.com", graduationYear: "2022", degree: "BCom Accounting", currentStatus: "Employed" },
-            { id: 2, name: "Mandla Nkosi", email: "m.nkosi@email.com", graduationYear: "2021", degree: "BSc Computer Science", currentStatus: "Graduate Studies" },
-            { id: 3, name: "Nthabiseng Mokoena", email: "n.mokoena@email.com", graduationYear: "2020", degree: "BA Psychology", currentStatus: "Employed" }
-        ];
-        
-        // DOM Elements
-        const pageSections = document.querySelectorAll('.page-section');
-        const sidebarMenuItems = document.querySelectorAll('.sidebar-menu li');
-        const pageTitle = document.getElementById('page-title');
-        
-        const membersManagementTableBody = document.getElementById('members-management-table-body');
-        const eventsManagementTableBody = document.getElementById('events-management-table-body');
-        const alumniTableBody = document.getElementById('alumni-table-body');
-        
-        const addMemberBtnPage = document.getElementById('add-member-btn-page');
-        const addEventBtnPage = document.getElementById('add-event-btn-page');
-        const addAlumniBtn = document.getElementById('add-alumni-btn');
-        
-        const addMemberModal = document.getElementById('add-member-modal');
-        const addEventModal = document.getElementById('add-event-modal');
-        const addMemberForm = document.getElementById('add-member-form');
-        const addEventForm = document.getElementById('add-event-form');
-        const closeModalBtns = document.querySelectorAll('.close-modal');
-        
-        // Page titles mapping
-        const pageTitles = {
-            dashboard: "BEC Dashboard",
-            members: "Member Management",
-            events: "Events Management",
-            alumni: "Alumni Management",
-            statistics: "Branch Statistics",
-            settings: "Branch Settings"
-        };
-        
-        // Initialize dashboard
-        function initDashboard() {
-            populateMembersManagementTable();
-            populateEventsManagementTable();
-            populateAlumniTable();
-            setupEventListeners();
-            setupNavigation();
-        }
-        
-        // Setup navigation
-        function setupNavigation() {
-            sidebarMenuItems.forEach(item => {
-                if (item.dataset.page) {
-                    item.addEventListener('click', () => {
-                        // Remove active class from all items
-                        sidebarMenuItems.forEach(i => i.classList.remove('active'));
-                        // Add active class to clicked item
-                        item.classList.add('active');
-                        
-                        // Hide all page sections
-                        pageSections.forEach(section => section.classList.remove('active'));
-                        
-                        // Show the selected page
-                        const pageId = item.dataset.page;
-                        document.getElementById(pageId).classList.add('active');
-                        
-                        // Update page title
-                        pageTitle.textContent = pageTitles[pageId] || "BEC Dashboard";
-                    });
-                }
-            });
-        }
-        
-        // Populate members management table
-        function populateMembersManagementTable() {
-            membersManagementTableBody.innerHTML = '';
-            
-            sampleMembers.forEach(member => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${member.name}</td>
-                    <td>${member.email}</td>
-                    <td>${member.institution}</td>
-                    <td><span class="status-badge ${member.role}">${member.role.toUpperCase()}</span></td>
-                    <td>${formatDate(member.joinDate)}</td>
-                    <td><span class="status-badge ${member.status.toLowerCase()}">${member.status}</span></td>
-                    <td class="action-btns">
-                        <button class="btn btn-primary btn-sm" onclick="editMember(${member.id})">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteMember(${member.id})">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                        ${member.status === 'Graduating' ? 
-                            `<button class="btn btn-warning btn-sm" onclick="moveToAlumni(${member.id})">
-                                <i class="fas fa-user-graduate"></i> Move to Alumni
-                            </button>` : ''
-                        }
-                    </td>
-                `;
-                membersManagementTableBody.appendChild(row);
-            });
-        }
-        
-        // Populate events management table
-        function populateEventsManagementTable() {
-            eventsManagementTableBody.innerHTML = '';
-            
-            sampleEvents.forEach(event => {
-                
-                       const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${event.title}</td>
-                    <td>${formatDate(event.date)}</td>
-                    <td>${event.type}</td>
-                    <td>${event.location}</td>
-                    <td>${event.attendees}</td>
-                    <td class="action-btns">
-                        <button class="btn btn-primary btn-sm" onclick="editEvent(${event.id})">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteEvent(${event.id})">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </td>
-                `;
-                eventsManagementTableBody.appendChild(row);
-            });
-        }
-        
-        // Populate alumni table
-        function populateAlumniTable() {
-            alumniTableBody.innerHTML = '';
-            
-            sampleAlumni.forEach(alumni => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${alumni.name}</td>
-                    <td>${alumni.email}</td>
-                    <td>${alumni.graduationYear}</td>
-                    <td>${alumni.degree}</td>
-                    <td>${alumni.currentStatus}</td>
-                    <td class="action-btns">
-                        <button class="btn btn-primary btn-sm" onclick="editAlumni(${alumni.id})">
-                            <i class="fas fa-edit"></i> Edit
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteAlumni(${alumni.id})">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </td>
-                `;
-                alumniTableBody.appendChild(row);
-            });
-        }
-        
-        // Setup event listeners
-        function setupEventListeners() {
-            // Add member button
-            addMemberBtnPage.addEventListener('click', () => {
-                addMemberModal.style.display = 'flex';
-            });
-            
-            // Add event button
-            addEventBtnPage.addEventListener('click', () => {
-                addEventModal.style.display = 'flex';
-            });
-            
-            // Add alumni button
-            addAlumniBtn.addEventListener('click', () => {
-                alert('Add alumni functionality would be implemented here');
-            });
-            
-            // Close modal buttons
-            closeModalBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    addMemberModal.style.display = 'none';
-                    addEventModal.style.display = 'none';
-                });
-            });
-            
-            // Close modal when clicking outside
-            window.addEventListener('click', (e) => {
-                if (e.target === addMemberModal) {
-                    addMemberModal.style.display = 'none';
-                }
-                if (e.target === addEventModal) {
-                    addEventModal.style.display = 'none';
-                }
-            });
-            
-            // Add member form submission
-            addMemberForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                // In a real app, this would send data to a backend
-                alert('Member added successfully!');
-                addMemberModal.style.display = 'none';
-                addMemberForm.reset();
-                // Refresh the table
-                populateMembersManagementTable();
-            });
-            
-            // Add event form submission
-            addEventForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                // In a real app, this would send data to a backend
-                alert('Event added successfully!');
-                addEventModal.style.display = 'none';
-                addEventForm.reset();
-                // Refresh the table
-                populateEventsManagementTable();
-            });
-            
-            // Branch settings
-            const branchNameSetting = document.getElementById('branch-name-setting');
-            branchNameSetting.addEventListener('change', (e) => {
-                document.getElementById('branch-name').textContent = e.target.value;
-            });
-        }
-        
-        // Utility function to format dates
-        function formatDate(dateString) {
-            const options = { year: 'numeric', month: 'short', day: 'numeric' };
-            return new Date(dateString).toLocaleDateString('en-ZA', options);
-        }
-        
-        // Member management functions
-        function editMember(id) {
-            const member = sampleMembers.find(m => m.id === id);
-            alert(`Edit member: ${member.name}\nThis would open an edit form in a real application.`);
-        }
-        
-        function deleteMember(id) {
-            if (confirm('Are you sure you want to delete this member?')) {
-                // In a real app, this would call a backend API
-                alert('Member deleted successfully!');
-                // Refresh the table
-                populateMembersManagementTable();
-            }
-        }
-        
-        function moveToAlumni(id) {
-            if (confirm('Move this member to alumni?')) {
-                // In a real app, this would call a backend API
-                alert('Member moved to alumni successfully!');
-                // Refresh the table
-                populateMembersManagementTable();
-            }
-        }
-        
-        // Event management functions
-        function editEvent(id) {
-            const event = sampleEvents.find(e => e.id === id);
-            alert(`Edit event: ${event.title}\nThis would open an edit form in a real application.`);
-        }
-        
-        function deleteEvent(id) {
-            if (confirm('Are you sure you want to delete this event?')) {
-                // In a real app, this would call a backend API
-                alert('Event deleted successfully!');
-                // Refresh the table
-                populateEventsManagementTable();
-            }
-        }
-        
-        // Alumni management functions
-        function editAlumni(id) {
-            const alumni = sampleAlumni.find(a => a.id === id);
-            alert(`Edit alumni: ${alumni.name}\nThis would open an edit form in a real application.`);
-        }
-        
-        function deleteAlumni(id) {
-            if (confirm('Are you sure you want to delete this alumni record?')) {
-                // In a real app, this would call a backend API
-                alert('Alumni record deleted successfully!');
-                // Refresh the table
-                populateAlumniTable();
-            }
-        }
-        
-        // Initialize the dashboard when the page loads
-        document.addEventListener('DOMContentLoaded', initDashboard);
-    </script>
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <h1 id="page-title">BEC Dashboard</h1>
+        <div class="user-info">
+          <img src="https://ui-avatars.com/api/?name=BEC+Member&background=2b6cb0&color=fff" alt="User">
+          <div>
+            <div id="user-name">BEC Member</div>
+            <div id="user-role" style="font-size: 0.8rem; color: #718096;">Branch Executive Committee</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Page -->
+      <div id="dashboard" class="page-section active">
+        <div class="dashboard-cards">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Total Members</div>
+              <div class="card-icon members">
+                <i class="fas fa-users"></i>
+              </div>
+            </div>
+            <div class="card-value" id="total-members">0</div>
+            <div class="card-desc">Active members in your branch</div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Upcoming Events</div>
+              <div class="card-icon events">
+                <i class="fas fa-calendar-alt"></i>
+              </div>
+            </div>
+            <div class="card-value" id="upcoming-events">0</div>
+            <div class="card-desc">Events scheduled this month</div>
+          </div>
+        </div>
+        <div class="table-container">
+          <div class="table-header">
+            <div class="table-title">Welcome</div>
+          </div>
+          <p id="welcome-message">Select your institution to view details.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+  <script>
+    const institutionModal = document.getElementById("institution-modal");
+    const confirmBtn = document.getElementById("confirm-institution");
+    const institutionSelect = document.getElementById("institution-select");
+    const dashboardContainer = document.getElementById("dashboard-container");
+    const branchNameDisplay = document.getElementById("branch-name");
+    const welcomeMessage = document.getElementById("welcome-message");
+
+    // sample data for different branches
+    const branchData = {
+      unizulu: { name: "University of Zululand", members: 145, events: 7 },
+      mut: { name: "Mangosuthu University of Technology", members: 120, events: 3 },
+      dut: { name: "Durban University of Technology", members: 165, events: 5 },
+      ukzn: { name: "University of KwaZulu-Natal", members: 200, events: 6 },
+      uct: { name: "University of Cape Town", members: 180, events: 4 },
+      wits: { name: "University of the Witwatersrand", members: 190, events: 5 }
+    };
+
+    confirmBtn.addEventListener("click", () => {
+      const selected = institutionSelect.value;
+      if (!selected) {
+        alert("Please select an institution.");
+        return;
+      }
+      const data = branchData[selected];
+      branchNameDisplay.textContent = data.name;
+      document.getElementById("total-members").textContent = data.members;
+      document.getElementById("upcoming-events").textContent = data.events;
+      welcomeMessage.textContent = `Welcome to the ${data.name} branch dashboard.`;
+
+      // hide modal, show dashboard
+      institutionModal.style.display = "none";
+      dashboardContainer.style.display = "flex";
+    });
+  </script>
 </body>
-                        </html>
+</html>

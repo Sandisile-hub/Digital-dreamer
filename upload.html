@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Files</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4 border-blue-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 5 4-4 4 4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">AWS Resource Manager</h1>
+                        <p class="text-sm text-gray-600">Manage your cloud resources</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="userInfo" class="text-sm text-gray-600"></span>
+                    <button onclick="openUploadModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2 shadow-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        <span>Upload Resource</span>
+                    </button>
+                    <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Total Resources</p>
+                        <p class="text-3xl font-bold text-gray-900" id="totalCount">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Storage Used</p>
+                        <p class="text-3xl font-bold text-gray-900" id="storageUsed">0 MB</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Last Upload</p>
+                        <p class="text-3xl font-bold text-gray-900" id="lastUpload">Never</p>
+                    </div>
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <div class="relative">
+                        <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input type="text" id="searchInput" placeholder="Search resources..." class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onkeyup="filterResources()">
+                    </div>
+                </div>
+                <select id="typeFilter" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="filterResources()">
+                    <option value="all">All Types</option>
+                    <option value="image">Images</option>
+                    <option value="document">Documents</option>
+                    <option value="video">Videos</option>
+                </select>
+                <select id="sortFilter" class="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="sortResources()">
+                    <option value="date-desc">Sort by Date (Newest)</option>
+                    <option value="date-asc">Sort by Date (Oldest)</option>
+                    <option value="name-asc">Sort by Name (A-Z)</option>
+                    <option value="name-desc">Sort by Name (Z-A)</option>
+                    <option value="size-asc">Sort by Size (Smallest)</option>
+                    <option value="size-desc">Sort by Size (Largest)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Resources Grid -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-semibold text-gray-900">Your Resources</h2>
+                <span id="resourceCount" class="text-sm text-gray-600">0 resources</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="resourcesGrid">
+                <!-- Resources will be loaded here -->
+            </div>
+            <div id="emptyState" class="text-center py-12 hidden">
+                <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+                </svg>
+                <h3 class="mt-4 text-lg font-medium text-gray-900">No resources found</h3>
+                <p class="mt-2 text-sm text-gray-600">Get started by uploading your first resource.</p>
+                <button onclick="openUploadModal()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    Upload Resource
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full fade-in">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-gray-900">Upload Resource</h3>
+                    <button onclick="closeUploadModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <form onsubmit="handleUpload(event)" class="p-6">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Resource Name</label>
+                    <input type="text" id="resourceName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter resource name" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea id="resourceDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Add a description..."></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">File</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <p class="mt-2 text-sm text-gray-600">Click to upload or drag and drop</p>
+                        <input type="file" id="fileInput" class="hidden" accept="image/*,video/*,.pdf,.doc,.docx,.txt,.zip" onchange="handleFileSelect(event)">
+                        <button type="button" onclick="document.getElementById('fileInput').click()" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">Choose File</button>
+                    </div>
+                    <p id="fileName" class="mt-2 text-sm text-gray-600"></p>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeUploadModal()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full fade-in">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-gray-900">Edit Resource</h3>
+                    <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <form onsubmit="handleEdit(event)" class="p-6">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Resource Name</label>
+                    <input type="text" id="editResourceName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea id="editDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Add a description..."></textarea>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full fade-in">
+            <div class="p-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">Delete Resource</h3>
+                        <p class="text-sm text-gray-600">This action cannot be undone.</p>
+                    </div>
+                </div>
+                <p class="text-gray-700 mb-6">Are you sure you want to delete "<span id="deleteResourceName" class="font-medium"></span>"?</p>
+                <div class="flex justify-end space-x-3">
+                    <button onclick="closeDeleteModal()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">Cancel</button>
+                    <button onclick="confirmDelete()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let resources = [];
+        let currentEditId = null;
+        let currentDeleteId = null;
+        let currentUser = null;
+
+        // Check authentication and load user data
+        function checkAuth() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userId = urlParams.get('userId');
+            
+            if (!userId) {
+                window.location.href = '/signin';
+                return;
+            }
+
+            // Get user info from API
+            fetch(`/api/users/${userId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('User not found');
+                    }
+                    return response.json();
+                })
+                .then(user => {
+                    currentUser = user;
+                    document.getElementById('userInfo').textContent = `Welcome, ${user.name} (${user.role})`;
+                    loadResources();
+                })
+                .catch(error => {
+                    console.error('Auth error:', error);
+                    window.location.href = '/signin';
+                });
+        }
+
+        // Load resources from API
+        function loadResources() {
+            // Since we don't have a specific API for resources, we'll simulate it
+            // In a real implementation, you would fetch from your API
+            simulateLoadResources();
+        }
+
+        function simulateLoadResources() {
+            // Simulate API call delay
+            setTimeout(() => {
+                // Sample data - in real implementation, this would come from your API
+                resources = [
+                    { id: 1, name: 'profile-image.jpg', type: 'image', size: '2.4 MB', date: '2024-01-15', description: 'User profile image', url: 'https://via.placeholder.com/300x200/3B82F6/FFFFFF?text=Profile+Image' },
+                    { id: 2, name: 'company-logo.png', type: 'image', size: '1.2 MB', date: '2024-01-14', description: 'Company logo design', url: 'https://via.placeholder.com/300x200/10B981/FFFFFF?text=Company+Logo' },
+                    { id: 3, name: 'presentation.pdf', type: 'document', size: '5.8 MB', date: '2024-01-13', description: 'Quarterly presentation', url: null },
+                    { id: 4, name: 'banner-design.jpg', type: 'image', size: '3.1 MB', date: '2024-01-12', description: 'Website banner design', url: 'https://via.placeholder.com/300x200/8B5CF6/FFFFFF?text=Banner+Design' }
+                ];
+                
+                updateStats();
+                renderResources();
+            }, 500);
+        }
+
+        function updateStats() {
+            const totalSize = resources.reduce((sum, resource) => {
+                const size = parseFloat(resource.size);
+                return sum + size;
+            }, 0);
+            
+            document.getElementById('totalCount').textContent = resources.length;
+            document.getElementById('storageUsed').textContent = totalSize.toFixed(1) + ' MB';
+            
+            if (resources.length > 0) {
+                const lastUpload = resources[0].date;
+                document.getElementById('lastUpload').textContent = formatDate(lastUpload);
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays} days ago`;
+            if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+            return date.toLocaleDateString();
+        }
+
+        function renderResources() {
+            const grid = document.getElementById('resourcesGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (resources.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                document.getElementById('resourceCount').textContent = '0 resources';
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            grid.innerHTML = '';
+
+            resources.forEach(resource => {
+                const card = document.createElement('div');
+                card.className = 'bg-gray-50 rounded-lg p-4 hover:shadow-lg transition-shadow duration-200 slide-up';
+                
+                const typeIcon = getTypeIcon(resource.type);
+                const typeColor = getTypeColor(resource.type);
+                
+                card.innerHTML = `
+                    <div class="aspect-w-16 aspect-h-9 mb-4">
+                        ${resource.url ? 
+                            `<img src="${resource.url}" alt="${resource.name}" class="w-full h-32 object-cover rounded-lg" onerror="this.src=''; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                             <div class="w-full h-32 bg-gray-200 rounded-lg items-center justify-center hidden">
+                                 <div class="text-center">
+                                     ${typeIcon}
+                                     <p class="text-sm text-gray-500 mt-2">Preview not available</p>
+                                 </div>
+                             </div>` :
+                            `<div class="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center">
+                                 <div class="text-center">
+                                     ${typeIcon}
+                                     <p class="text-sm text-gray-500 mt-2">${resource.type.toUpperCase()}</p>
+                                 </div>
+                             </div>`
+                        }
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="font-medium text-gray-900 truncate" title="${resource.name}">${resource.name}</h3>
+                        ${resource.description ? `<p class="text-sm text-gray-600 truncate" title="${resource.description}">${resource.description}</p>` : ''}
+                        <div class="flex items-center justify-between text-sm text-gray-500">
+                            <span class="px-2 py-1 ${typeColor} rounded-full text-xs font-medium">${resource.type}</span>
+                            <span>${resource.size}</span>
+                        </div>
+                        <p class="text-xs text-gray-400">${resource.date}</p>
+                        <div class="flex space-x-2 pt-2">
+                            <button onclick="openEditModal(${resource.id})" class="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                                Edit
+                            </button>
+                            <button onclick="openDeleteModal(${resource.id})" class="flex-1 bg-red-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-red-700 transition-colors">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+
+            document.getElementById('resourceCount').textContent = `${resources.length} resource${resources.length !== 1 ? 's' : ''}`;
+        }
+
+        function getTypeIcon(type) {
+            const icons = {
+                image: '<svg class="w-8 h-8 text-blue-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>',
+                document: '<svg class="w-8 h-8 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>',
+                video: '<svg class="w-8 h-8 text-purple-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>'
+            };
+            return icons[type] || icons.document;
+        }
+
+        function getTypeColor(type) {
+            const colors = {
+                image: 'bg-blue-100 text-blue-800',
+                document: 'bg-green-100 text-green-800',
+                video: 'bg-purple-100 text-purple-800'
+            };
+            return colors[type] || colors.document;
+        }
+
+        // Search and filter functions
+        function filterResources() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const typeFilter = document.getElementById('typeFilter').value;
+            
+            let filtered = resources.filter(resource => {
+                const matchesSearch = resource.name.toLowerCase().includes(searchTerm) || 
+                                    (resource.description && resource.description.toLowerCase().includes(searchTerm));
+                const matchesType = typeFilter === 'all' || resource.type === typeFilter;
+                return matchesSearch && matchesType;
+            });
+            
+            sortResources(filtered);
+        }
+
+        function sortResources(filteredResources = resources) {
+            const sortValue = document.getElementById('sortFilter').value;
+            let sorted = [...filteredResources];
+            
+            switch(sortValue) {
+                case 'date-desc':
+                    sorted.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    break;
+                case 'date-asc':
+                    sorted.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    break;
+                case 'name-asc':
+                    sorted.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'name-desc':
+                    sorted.sort((a, b) => b.name.localeCompare(a.name));
+                    break;
+                case 'size-asc':
+                    sorted.sort((a, b) => parseFloat(a.size) - parseFloat(b.size));
+                    break;
+                case 'size-desc':
+                    sorted.sort((a, b) => parseFloat(b.size) - parseFloat(a.size));
+                    break;
+            }
+            
+            resources = sorted;
+            renderResources();
+        }
+
+        // Modal functions
+        function openUploadModal() {
+            document.getElementById('uploadModal').classList.remove('hidden');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.add('hidden');
+            document.getElementById('resourceName').value = '';
+            document.getElementById('resourceDescription').value = '';
+            document.getElementById('fileName').textContent = '';
+        }
+
+        function openEditModal(id) {
+            const resource = resources.find(r => r.id === id);
+            if (resource) {
+                currentEditId = id;
+                document.getElementById('editResourceName').value = resource.name;
+                document.getElementById('editDescription').value = resource.description || '';
+                document.getElementById('editModal').classList.remove('hidden');
+            }
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            currentEditId = null;
+        }
+
+        function openDeleteModal(id) {
+            const resource = resources.find(r => r.id === id);
+            if (resource) {
+                currentDeleteId = id;
+                document.getElementById('deleteResourceName').textContent = resource.name;
+                document.getElementById('deleteModal').classList.remove('hidden');
+            }
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
+            currentDeleteId = null;
+        }
+
+        // Form handlers
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('fileName').textContent = `Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                
+                // Auto-fill name if empty
+                const nameInput = document.getElementById('resourceName');
+                if (!nameInput.value) {
+                    nameInput.value = file.name.split('.')[0]; // Remove extension
+                }
+            }
+        }
+
+        function handleUpload(event) {
+            event.preventDefault();
+            const name = document.getElementById('resourceName').value;
+            const description = document.getElementById('resourceDescription').value;
+            const fileInput = document.getElementById('fileInput');
+            
+            if (name && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                const fileType = file.type.startsWith('image/') ? 'image' : 
+                               file.type.startsWith('video/') ? 'video' : 'document';
+                
+                const newResource = {
+                    id: Date.now(),
+                    name: name,
+                    description: description,
+                    type: fileType,
+                    size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
+                    date: new Date().toISOString().split('T')[0],
+                    url: fileType === 'image' ? URL.createObjectURL(file) : null
+                };
+                
+                // In a real implementation, you would send this to your API
+                // For now, we'll simulate an API call
+                simulateUpload(newResource);
+            }
+        }
+
+        function simulateUpload(resource) {
+            // Simulate API call delay
+            setTimeout(() => {
+                resources.unshift(resource);
+                updateStats();
+                renderResources();
+                closeUploadModal();
+                showNotification('Resource uploaded successfully!', 'success');
+            }, 1000);
+        }
+
+        function handleEdit(event) {
+            event.preventDefault();
+            const newName = document.getElementById('editResourceName').value;
+            const newDescription = document.getElementById('editDescription').value;
+            
+            if (currentEditId) {
+                const resource = resources.find(r => r.id === currentEditId);
+                if (resource) {
+                    resource.name = newName;
+                    resource.description = newDescription;
+                    
+                    // Simulate API update
+                    setTimeout(() => {
+                        renderResources();
+                        closeEditModal();
+                        showNotification('Resource updated successfully!', 'success');
+                    }, 500);
+                }
+            }
+        }
+
+        function confirmDelete() {
+            if (currentDeleteId) {
+                // Simulate API delete
+                setTimeout(() => {
+                    resources = resources.filter(r => r.id !== currentDeleteId);
+                    updateStats();
+                    renderResources();
+                    closeDeleteModal();
+                    showNotification('Resource deleted successfully!', 'success');
+                }, 500);
+            }
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 fade-in ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '/signin';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            
+            // Add drag and drop functionality
+            const dropZone = document.querySelector('#uploadModal .border-dashed');
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, highlight, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, unhighlight, false);
+});
+
+function highlight() {
+    dropZone.classList.add('border-blue-400', 'bg-blue-50');
+}
+
+function unhighlight() {
+    dropZone.classList.remove('border-blue-400', 'bg-blue-50');
+}
+
+dropZone.addEventListener('drop', handleDrop, false);
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    const fileInput = document.getElementById('fileInput');
+    
+    if (files.length > 0) {
+        fileInput.files = files;
+        handleFileSelect({ target: fileInput });
+    }
+}
+
+// Keyboard navigation and accessibility
+document.addEventListener('keydown', function(e) {
+    // Close modals with Escape key
+    if (e.key === 'Escape') {
+        if (!document.getElementById('uploadModal').classList.contains('hidden')) {
+            closeUploadModal();
+        } else if (!document.getElementById('editModal').classList.contains('hidden')) {
+            closeEditModal();
+        } else if (!document.getElementById('deleteModal').classList.contains('hidden')) {
+            closeDeleteModal();
+        }
+    }
+});
+
+// Focus management for modals
+function trapFocus(modal) {
+    const focusableElements = modal.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    modal.addEventListener('keydown', function(e) {
+        if (e.key !== 'Tab') return;
+
+        if (e.shiftKey) {
+            if (document.activeElement === firstElement) {
+                lastElement.focus();
+                e.preventDefault();
+            }
+        } else {
+            if (document.activeElement === lastElement) {
+                firstElement.focus();
+                e.preventDefault();
+            }
+        }
+    });
+}
+
+// Initialize focus trapping for modals
+const modals = ['uploadModal', 'editModal', 'deleteModal'];
+modals.forEach(modalId => {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        trapFocus(modal);
+    }
+});
+
+// Enhanced file validation
+function validateFile(file) {
+    const maxSize = 100 * 1024 * 1024; // 100MB
+    const allowedTypes = [
+        'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+        'video/mp4', 'video/webm', 'video/ogg',
+        'application/pdf', 'application/msword', 
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/plain', 'application/zip'
+    ];
+
+    if (file.size > maxSize) {
+        showNotification('File size must be less than 100MB', 'error');
+        return false;
+    }
+
+    if (!allowedTypes.includes(file.type)) {
+        showNotification('File type not supported', 'error');
+        return false;
+    }
+
+    return true;
+}
+
+// Improved file selection handler
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+        if (!validateFile(file)) {
+            event.target.value = '';
+            document.getElementById('fileName').textContent = '';
+            return;
+        }
+        
+        document.getElementById('fileName').textContent = `Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+        
+        // Auto-fill name if empty
+        const nameInput = document.getElementById('resourceName');
+        if (!nameInput.value) {
+            const fileNameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+            nameInput.value = fileNameWithoutExt;
+        }
+    }
+}
+
+// Add loading states
+function setLoadingState(button, isLoading) {
+    if (isLoading) {
+        button.disabled = true;
+        button.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Processing...';
+    } else {
+        button.disabled = false;
+        button.textContent = button.getAttribute('data-original-text');
+    }
+}
+
+// Enhanced upload handler with loading state
+function handleUpload(event) {
+    event.preventDefault();
+    const submitButton = event.target.querySelector('button[type="submit"]');
+    submitButton.setAttribute('data-original-text', submitButton.textContent);
+    setLoadingState(submitButton, true);
+
+    const name = document.getElementById('resourceName').value;
+    const description = document.getElementById('resourceDescription').value;
+    const fileInput = document.getElementById('fileInput');
+    
+    if (name && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        if (!validateFile(file)) {
+            setLoadingState(submitButton, false);
+            return;
+        }
+        
+        const fileType = file.type.startsWith('image/') ? 'image' : 
+                       file.type.startsWith('video/') ? 'video' : 'document';
+        
+        const newResource = {
+            id: Date.now(),
+            name: name,
+            description: description,
+            type: fileType,
+            size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
+            date: new Date().toISOString().split('T')[0],
+            url: fileType === 'image' ? URL.createObjectURL(file) : null
+        };
+        
+        simulateUpload(newResource, submitButton);
+    } else {
+        setLoadingState(submitButton, false);
+    }
+}
+
+function simulateUpload(resource, button) {
+    setTimeout(() => {
+        resources.unshift(resource);
+        updateStats();
+        renderResources();
+        closeUploadModal();
+        setLoadingState(button, false);
+        showNotification('Resource uploaded successfully!', 'success');
+    }, 1500);
+}
+
+// Add error handling for image loading
+function handleImageError(img) {
+    img.style.display = 'none';
+    const fallback = img.nextElementSibling;
+    if (fallback && fallback.classList.contains('hidden')) {
+        fallback.classList.remove('hidden');
+    }
+}
+
+// Responsive adjustments
+function handleResize() {
+    const grid = document.getElementById('resourcesGrid');
+    if (window.innerWidth < 768) {
+        grid.className = 'grid grid-cols-1 gap-4';
+    } else if (window.innerWidth < 1024) {
+        grid.className = 'grid grid-cols-2 gap-6';
+    } else if (window.innerWidth < 1280) {
+        grid.className = 'grid grid-cols-3 gap-6';
+    } else {
+        grid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6';
+    }
+}
+
+window.addEventListener('resize', handleResize);
+
+// Initialize responsive layout
+handleResize();
+
+// Add service worker for offline functionality (optional)
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+            console.log('SW registered: ', registration);
+        }).catch(function(registrationError) {
+            console.log('SW registration failed: ', registrationError);
+        });
+    });
+}
+
+// Export functionality (bonus feature)
+function exportResources() {
+    const exportData = {
+        exportedAt: new Date().toISOString(),
+        user: currentUser ? currentUser.name : 'Unknown',
+        resources: resources
+    };
+    
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `aws-resources-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    showNotification('Resources exported successfully!', 'success');
+}
+
+// Add export button to the UI (you can add this to your HTML)
+function addExportButton() {
+    const header = document.querySelector('header .flex.items-center.space-x-4');
+    const exportButton = document.createElement('button');
+    exportButton.innerHTML = `
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <span>Export</span>
+    `;
+    exportButton.className = 'bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2';
+    exportButton.onclick = exportResources;
+    
+    header.insertBefore(exportButton, header.querySelector('button:last-child'));
+}
+
+// Initialize export button if user has permission
+if (currentUser && currentUser.role === 'admin') {
+    addExportButton();
+}
+
+// Final initialization
+document.addEventListener('DOMContentLoaded', function() {
+    checkAuth();
+    
+    // Add any additional initialization here
+    console.log('AWS Resource Manager initialized');
+});
+
+// Error boundary for unhandled errors
+window.addEventListener('error', function(e) {
+    console.error('Application error:', e.error);
+    showNotification('An unexpected error occurred', 'error');
+});
+
+// Add this CSS for the loading spinner
+const additionalStyles = `
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
+`;
+
+const styleSheet = document.createElement('style');
+styleSheet.textContent = additionalStyles;
+
+document.head.appendChild(styleSheet);})

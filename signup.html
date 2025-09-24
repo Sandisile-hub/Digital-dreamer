@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NaTeSA Sign Up</title>
+  <link rel="stylesheet" href="signupstyle.css">
+</head>
+<body>
+
+  <div class="container">
+    <h2>NaTeSA Sign Up</h2>
+    <form id="signupForm">
+      <label for="fullname">Full Name</label>
+      <input type="text" id="fullname" name="fullname" placeholder="Enter your full name" required>
+
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" 
+            placeholder="Enter your phone number" 
+            pattern="\d{10,}" 
+            title="Phone number must be at least 10 digits"
+            required>
+
+
+      <label for="role">Role</label>
+      <select id="role" name="role" required>
+        <option value="">-- Select Role --</option>
+        <option value="bec">BEC Member</option>
+        <option value="general">General Member</option>
+        <option value="nec">NEC Member</option>
+      </select>
+
+      <label for="university">University</label>
+      <select id="university" name="university" required>
+        <option value="">-- Select University --</option>
+        <option value="ukzn">University of KwaZulu-Natal (UKZN)</option>
+        <option value="uct">University of Cape Town (UCT)</option>
+        <option value="wits">University of the Witwatersrand (Wits)</option>
+        <option value="dut">Durban University of Technology (DUT)</option>
+        <option value="unisa">University of South Africa (UNISA)</option>
+        <option value="nwu">North West University (NWU)</option>
+        <option value="ru">Rhodes University (RU)</option>
+        <option value="cput">Cape Penisula University of Technology (CPUT)</option>
+        <option value="uj">University Of Johannesburg (UJ)</option>
+        <option value="up">University Of Pretoria (UP)</option>
+        <option value="tut">Tshwane University Of Technology (TUT)</option>
+        <option value="cut">Central University Of Technology (CUT)</option>
+        <option value="ufs">University Of The Free State (UFS)</option>
+        <option value="wsu">Walter Sisulu University(WSU)</option>
+        <option value="spu">Sol Plaatje (SPU)</option>
+        <option value="unizulu">University of Zululand (Unizulu)</option>
+        <option value="mut">Mangosuthu University Of Technology (MUT)</option>
+        <option value="ufh">Fort Hare (UFH)</option>
+        <option value="nmu">Nelson Mandela University (NMU)</option>
+        <option value="ump">University of Mpumalanga (UMP)</option>
+        <option value="ul">University of Limpopo (UL)</option>
+        <option value="vut">Vaal University Of Technology (VUT)</option>
+
+        <option value="other">Other</option>
+      </select>
+
+
+      <label for="password">Password</label>
+      <div class="password-container">
+      <input type="password" id="password" name="password" 
+         placeholder="Create a password" 
+         required 
+         pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}" 
+         title="Password must be at least 8 characters long, contain uppercase, lowercase, number, and special character">
+      <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
+      </div>
+
+      <label for="confirm">Confirm Password</label>
+      <div class="password-container">
+      <input type="password" id="confirm" name="confirm" 
+         placeholder="Confirm your password" required>
+      <span class="toggle-password" onclick="togglePassword('confirm')">👁️</span>
+      </div>
+
+
+
+      <button type="submit">  <a href="bec_dashboard.html">Sign Up</a></button>
+    </form>
+
+    <div class="footer">
+      Already have an account? <a href="signin.html">Login here</a>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const role = document.getElementById("role").value;
+
+      if (role === "bec") {
+        window.location.href = "bec_dashboard.html";
+      } else if (role === "general") {
+        window.location.href = "gnm_dashboard.html";
+      } else if (role === "nec") {
+        window.location.href = "nec_dashboard.html";
+      } else {
+        alert("Please select a valid role.");
+      }
+    });
+  </script>
+
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm").value;
+    const role = document.getElementById("role").value;
+
+    // Check if passwords match
+    if(password !== confirm) {
+        alert("Passwords do not match!");
+        return;
+    }
+
+    // Optional: extra JS check for password strength
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+    if(!passwordPattern.test(password)) {
+        alert("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
+        return;
+    }
+
+    // Redirect based on role
+    if (role === "bec") {
+        window.location.href = "bec-dashboard.html";
+    } else if (role === "general") {
+        window.location.href = "general-dashboard.html";
+    } else if (role === "nec") {
+        window.location.href = "nec-dashboard.html";
+    } else {
+        alert("Please select a valid role.");
+    }
+    });
+</script>
+
+<script>
+    function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    if (field.type === "password") {
+        field.type = "text";
+    } else {
+        field.type = "password";
+    }
+    }
+</script>
+
+
+
+</body>
+</html>

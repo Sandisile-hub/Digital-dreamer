@@ -162,22 +162,6 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Left Column -->
             <div class="lg:col-span-2 space-y-8">
-                <!-- Branch Live Activity Feed -->
-                <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
-                    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-xl font-bold text-white flex items-center">
-                                <div class="h-3 w-3 bg-green-400 rounded-full pulse-dot mr-3"></div>
-                                Live NaTeSA Branch Updates
-                            </h3>
-                            <span class="text-indigo-100 text-sm">Real-time</span>
-                        </div>
-                    </div>
-                    <div class="p-6 max-h-96 overflow-y-auto" id="branchActivityFeed">
-                        <!-- Branch activity items will be populated by JavaScript -->
-                    </div>
-                </div>
-
                 <!-- Branch Events -->
                 <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200">
@@ -310,17 +294,6 @@
 
     <script>
         // Sample data for the branch dashboard
-        const branchActivities = [
-            { type: 'event', message: 'Tech Innovation Summit registration opens tomorrow', time: '2 minutes ago', icon: '🎯', color: 'blue' },
-            { type: 'achievement', message: 'Sarah Okafor (Class 2018) promoted to Senior Manager at Microsoft', time: '15 minutes ago', icon: '🏆', color: 'green' },
-            { type: 'news', message: 'Branch meeting scheduled for March 20th at 6PM', time: '1 hour ago', icon: '📢', color: 'purple' },
-            { type: 'members', message: '5 new members joined the Lagos branch this week', time: '2 hours ago', icon: '👥', color: 'orange' },
-            { type: 'job', message: '10 new job opportunities posted in the branch job board', time: '3 hours ago', icon: '💼', color: 'indigo' },
-            { type: 'mentorship', message: 'Branch mentorship program accepting new applications', time: '5 hours ago', icon: '🤝', color: 'teal' },
-            { type: 'donation', message: 'Branch fundraising for student scholarships reached ₦500k', time: '1 day ago', icon: '💝', color: 'pink' },
-            { type: 'graduation', message: '25 new graduates from Lagos joined the alumni network', time: '2 days ago', icon: '🎓', color: 'yellow' }
-        ];
-
         const branchEvents = [
             { 
                 title: 'Tech Innovation Summit', 
@@ -396,48 +369,22 @@
         ];
 
         const branchLeadership = [
-            { name: 'Mr. Buthelezi Mlando', position: 'Branch President', email: 'adebayo.j@natesa.org', phone: '+234 801 234 5678', image: 'AJ' },
-            { name: 'Mrs. Blossom Qwabe', position: 'Vice President', email: 'chinenye.o@natesa.org', phone: '+234 802 345 6789', image: 'CO' },
-            { name: 'Mr. Kwazi Zungu', position: 'Secretary', email: 'tunde.w@natesa.org', phone: '+234 803 456 7890', image: 'TW' },
-            { name: 'Ms. Mbali Zuma', position: 'Treasurer', email: 'amina.m@natesa.org', phone: '+234 804 567 8901', image: 'AM' }
+            { name: 'Mr. Buthelezi Mlando', position: 'Branch President', email: 'buthelezi.m@natesa.org', phone: '+234 801 234 5678', image: 'AJ' },
+            { name: 'Mrs. Blossom Qwabe', position: 'Vice President', email: 'blossom.q@natesa.org', phone: '+234 802 345 6789', image: 'CO' },
+            { name: 'Mr. Kwazi Zungu', position: 'Secretary', email: 'kwazi.@natesa.org', phone: '+234 803 456 7890', image: 'TW' },
+            { name: 'Ms. Mbali Zuma', position: 'Treasurer', email: 'mbali.m@natesa.org', phone: '+234 804 567 8901', image: 'AM' }
         ];
 
         const branchMembers = [
-            { name: 'Thabiso Biyela', class: '2018', position: 'Senior Manager, Microsoft', image: 'SO', connected: true },
+            { name: 'Kwazikwakhe Zungu', class: '2018', position: 'Senior Manager, Microsoft', image: 'SO', connected: true },
             { name: 'Manqoba Zikhali', class: '2017', position: 'Lead Engineer, Google', image: 'CO', connected: true },
-            { name: 'Fatima Abdullahi', class: '2016', position: 'VP, First Bank Nigeria', image: 'FA', connected: false },
-            { name: 'Emeka Nwosu', class: '2019', position: 'Product Manager, Flutterwave', image: 'EN', connected: false },
-            { name: 'Bisi Adeyemi', class: '2015', position: 'Founder, EduTech NG', image: 'BA', connected: true },
-            { name: 'Kunle Adebayo', class: '2020', position: 'Data Scientist, Andela', image: 'KA', connected: false },
-            { name: 'Ngozi Eze', class: '2014', position: 'Senior Lecturer, UNILAG', image: 'NE', connected: true },
-            { name: 'Segun Balogun', class: '2017', position: 'CTO, Paystack', image: 'SB', connected: false }
+            { name: 'Zekhethelo Sibisi', class: '2016', position: 'VP, First Bank Nigeria', image: 'FA', connected: false },
+            { name: 'Thandwayinkosi Jakuza', class: '2019', position: 'Product Manager, Flutterwave', image: 'EN', connected: false },
+            { name: 'Basi Qondile', class: '2015', position: 'Founder, EduTech NG', image: 'BA', connected: true },
+            { name: 'Kunene Andile', class: '2020', position: 'Data Scientist, Andela', image: 'KA', connected: false },
+            { name: 'Mgozi Mashushwane', class: '2014', position: 'Senior Lecturer, UNILAG', image: 'NE', connected: true },
+            { name: 'Philani Sethunzi', class: '2017', position: 'CTO, Paystack', image: 'SB', connected: false }
         ];
-
-        // Populate branch activity feed
-        function populateBranchActivityFeed() {
-            const feed = document.getElementById('branchActivityFeed');
-            feed.innerHTML = '';
-
-            branchActivities.forEach((activity, index) => {
-                const item = document.createElement('div');
-                item.className = 'flex items-start space-x-4 p-4 hover:bg-gray-50 rounded-xl transition-colors';
-                item.innerHTML = `
-                    <div class="flex-shrink-0">
-                        <div class="h-10 w-10 bg-${activity.color}-100 rounded-full flex items-center justify-center">
-                            <span class="text-lg">${activity.icon}</span>
-                        </div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900">${activity.message}</p>
-                        <p class="text-xs text-gray-500 mt-1">${activity.time}</p>
-                    </div>
-                    <div class="flex-shrink-0">
-                        <div class="h-2 w-2 bg-${activity.color}-400 rounded-full"></div>
-                    </div>
-                `;
-                feed.appendChild(item);
-            });
-        }
 
         // Populate branch events
         function populateBranchEvents() {
@@ -544,32 +491,12 @@
             });
         }
 
-        // Add real-time updates simulation
-        function simulateRealTimeUpdates() {
-            setInterval(() => {
-                // Add a new branch activity every 30 seconds
-                const newActivity = {
-                    type: 'live',
-                    message: 'New member joined Lagos branch',
-                    time: 'Just now',
-                    icon: '👋',
-                    color: 'green'
-                };
-                
-                branchActivities.unshift(newActivity);
-                if (branchActivities.length > 10) branchActivities.pop();
-                populateBranchActivityFeed();
-            }, 30000);
-        }
-
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', () => {
-            populateBranchActivityFeed();
             populateBranchEvents();
             populateBranchNews();
             populateBranchLeadership();
             populateBranchMembers();
-            simulateRealTimeUpdates();
         });
 
         // Add click handlers for interactive elements

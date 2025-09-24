@@ -62,7 +62,7 @@
   <footer>
     <p>&copy; 2025 Nazareth Tertiary Students Association. All rights reserved.</p>
   </footer>
-
+<script src="api.js"></script>
   <!-- JavaScript to load events from database -->
   <script>
     // Function to load events from API
@@ -74,7 +74,7 @@
       eventsContainer.innerHTML = '<p>Loading events...</p>';
       
       // Make API call to get events
-      fetch('http://localhost:5000/api/events')
+      fetch(`https://digital-dreamer.onrender.com/api/events`)
         .then(function(response) {
           return response.json();
         })

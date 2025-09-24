@@ -583,9 +583,15 @@
                 <button class="nav-item" onclick="showSection('resources')" data-section="resources">
                     Resources
                 </button>
+<<<<<<< HEAD
                 <button class="nav-item" onclick="showSection('profile')" data-section="profile">
                     My Profile
                 </button>
+=======
+                <a href="profile.html"><button class="nav-item" onclick="showSection('profile')" data-section="profile">
+                    My Profile
+                </button></a>
+>>>>>>> 82554ee37176d5458e98ea7d33f449ba916cdb2b
             </div>
         </nav>
 
@@ -655,6 +661,7 @@
             </section>
 
             <!-- Profile Section -->
+<<<<<<< HEAD
             <section id="profile-section" class="content-section">
                 <div class="section-header">
                     <h2>My Profile</h2>
@@ -686,389 +693,435 @@
                     </div>
                 </div>
             </section>
+=======
+           
+>>>>>>> 82554ee37176d5458e98ea7d33f449ba916cdb2b
         </main>
     </div>
 
     <!-- Success/Error Messages -->
     <div id="toast" class="toast"></div>
+<script>
+    // Database connection and API endpoints - use relative paths for production
+    var API_BASE = window.location.origin + '/api';
+    
+    // Current user data (will be populated after login)
+    var currentUser = null;
 
-    <script>
-        // Database connection and API endpoints
-        var API_BASE = 'http://localhost:5000/api';
+    // Main initialization function
+    async function initializeDashboard() {
+        // Check if user is logged in
+        await checkUserLogin();
         
-        // Current user data (simulated for general member)
-        var currentUser = {
-            id: 1,
-            name: 'Asimthande Mazibuko',
-            email: 'asimmnomiya0@gmail.com',
-            role: 'member',
-            branch_id: 1,
-            branch_name: 'Main Branch',
-            join_date: '2025-09-22'
-        };
-
-        // Main initialization function
-        function initializeDashboard() {
-            // Hide loading screen after 1.5 seconds
+        // Hide loading screen after 1.5 seconds
+        setTimeout(function() {
+            document.getElementById('loading-screen').style.opacity = '0';
             setTimeout(function() {
-                document.getElementById('loading-screen').style.opacity = '0';
-                setTimeout(function() {
-                    document.getElementById('loading-screen').style.display = 'none';
-                    document.getElementById('app-container').style.display = 'flex';
-                    loadAllData();
-                }, 500);
-            }, 1500);
+                document.getElementById('loading-screen').style.display = 'none';
+                document.getElementById('app-container').style.display = 'flex';
+                loadAllData();
+            }, 500);
+        }, 1500);
+    }
 
-            // Set up user profile information
-            setupUserProfile();
-        }
-
-        // Set up user profile information
-        function setupUserProfile() {
-            document.getElementById('user-name').textContent = currentUser.name;
-            document.getElementById('user-role').textContent = currentUser.role;
-            document.getElementById('user-branch-name').textContent = currentUser.branch_name;
-            
-            // Profile section
-            document.getElementById('profile-id').textContent = 'GM-' + currentUser.id.toString().padStart(3, '0');
-            document.getElementById('profile-name').textContent = currentUser.name;
-            document.getElementById('profile-email').textContent = currentUser.email;
-            document.getElementById('profile-branch').textContent = currentUser.branch_name;
-            document.getElementById('profile-join-date').textContent = formatDate(currentUser.join_date);
-        }
-
-        // Load all data for the dashboard
-        function loadAllData() {
-            loadEvents();
-            loadNews();
-            loadBranches();
-            updateDashboardCounts();
-        }
-
-        // Load events from database
-        function loadEvents() {
-            fetch(API_BASE + '/events')
-                .then(function(response) {
-                    return response.json();
-                })
-                .then(function(events) {
-                    displayEvents(events);
-                })
-                .catch(function(error) {
-                    console.log('Error loading events:', error);
-                    // Fallback to sample data if API fails
-                    displayEvents(getSampleEvents());
-                });
-        }
-
-        // Display events in the events section
-        function displayEvents(events) {
-            var eventsList = document.getElementById('events-list');
-            eventsList.innerHTML = '';
-
-            if (events.length === 0) {
-                eventsList.innerHTML = '<div class="data-item text-center">No upcoming events found.</div>';
+    // Check if user is logged in and get user data
+    async function checkUserLogin() {
+        try {
+            // Try to get user data from session or redirect to login
+            const userData = localStorage.getItem('currentUser');
+            if (userData) {
+                currentUser = JSON.parse(userData);
+                setupUserProfile();
+            } else {
+                // Redirect to login if not authenticated
+                window.location.href = '/signin';
                 return;
             }
-
-            // Sort events by date (soonest first)
-            events.sort(function(a, b) {
-                return new Date(a.date) - new Date(b.date);
-            });
-
-            events.forEach(function(event) {
-                var eventElement = document.createElement('div');
-                eventElement.className = 'data-item';
-                
-                var eventDate = new Date(event.date);
-                var formattedDate = eventDate.toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-
-                eventElement.innerHTML = `
-                    <div class="data-item-header">
-                        <div class="data-item-title">${event.title}</div>
-                        <div class="data-item-meta">
-                            <span>${formattedDate}</span>
-                            ${event.branch_name ? '<span>• ' + event.branch_name + '</span>' : ''}
-                            ${event.event_type ? '<span>• ' + event.event_type + '</span>' : ''}
-                        </div>
-                    </div>
-                    <div class="data-item-content">
-                        <p>${event.description || 'Join us for this exciting event!'}</p>
-                        ${event.location ? '<p><strong>Location:</strong> ' + event.location + '</p>' : ''}
-                    </div>
-                `;
-
-                eventsList.appendChild(eventElement);
-            });
-
-            // Update dashboard count
-            document.getElementById('upcoming-events').textContent = events.length;
+        } catch (error) {
+            console.error('Login check failed:', error);
+            window.location.href = '/signin';
         }
+    }
 
-        // Load news from database
-        function loadNews() {
-            fetch(API_BASE + '/news')
-                .then(function(response) {
-                    return response.json();
-                })
-                .then(function(news) {
-                    displayNews(news);
-                })
-                .catch(function(error) {
-                    console.log('Error loading news:', error);
-                    // Fallback to sample data if API fails
-                    displayNews(getSampleNews());
-                });
+    // Set up user profile information with real data
+    function setupUserProfile() {
+        if (!currentUser) return;
+
+        document.getElementById('user-name').textContent = currentUser.name;
+        document.getElementById('user-role').textContent = currentUser.role;
+        document.getElementById('user-branch-name').textContent = currentUser.branch_name || 'General Member Portal';
+        
+        // Profile section
+        document.getElementById('profile-id').textContent = 'GM-' + currentUser.id.toString().padStart(3, '0');
+        document.getElementById('profile-name').textContent = currentUser.name;
+        document.getElementById('profile-email').textContent = currentUser.email;
+        document.getElementById('profile-branch').textContent = currentUser.branch_name || 'Main Branch';
+        document.getElementById('profile-join-date').textContent = formatDate(new Date().toISOString());
+        
+        // Set status badge
+        const statusBadge = document.getElementById('profile-status');
+        statusBadge.textContent = currentUser.status || 'Active';
+        statusBadge.className = `status-badge status-${(currentUser.status || 'active').toLowerCase()}`;
+    }
+
+    // Load all data for the dashboard
+    async function loadAllData() {
+        try {
+            await Promise.all([
+                loadEvents(),
+                loadNews(),
+                loadBranches(),
+                loadDashboardStats()
+            ]);
+        } catch (error) {
+            console.error('Error loading dashboard data:', error);
+            showToast('Error loading data. Please try again.', 'error');
         }
+    }
 
-        // Display news in the news section
-        function displayNews(news) {
-            var newsList = document.getElementById('news-list');
-            newsList.innerHTML = '';
-
-            if (news.length === 0) {
-                newsList.innerHTML = '<div class="data-item text-center">No news available.</div>';
-                return;
-            }
-
-            // Sort news by publish date (newest first)
-            news.sort(function(a, b) {
-                return new Date(b.publish_date) - new Date(a.publish_date);
-            });
-
-            news.forEach(function(newsItem) {
-                var newsElement = document.createElement('div');
-                newsElement.className = 'data-item';
-                
-                var publishDate = new Date(newsItem.publish_date);
-                var formattedDate = publishDate.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-
-                newsElement.innerHTML = `
-                    <div class="data-item-header">
-                        <div class="data-item-title">${newsItem.title}</div>
-                        <div class="data-item-meta">
-                            <span>${formattedDate}</span>
-                            ${newsItem.branch_name ? '<span>• ' + newsItem.branch_name + '</span>' : ''}
-                            ${newsItem.author_name ? '<span>• By ' + newsItem.author_name + '</span>' : ''}
-                        </div>
-                    </div>
-                    <div class="data-item-content">
-                        <p>${newsItem.content}</p>
-                    </div>
-                `;
-
-                newsList.appendChild(newsElement);
-            });
-
-            // Update dashboard count
-            document.getElementById('recent-news').textContent = news.length;
-        }
-
-        // Load branches for filtering
-        function loadBranches() {
-            fetch(API_BASE + '/branches')
-                .then(function(response) {
-                    return response.json();
-                })
-                .then(function(branches) {
-                    populateBranchFilter(branches);
-                })
-                .catch(function(error) {
-                    console.log('Error loading branches:', error);
-                    // Fallback to sample branches
-                    populateBranchFilter(getSampleBranches());
-                });
-        }
-
-        // Populate branch filter dropdown
-        function populateBranchFilter(branches) {
-            var branchFilter = document.getElementById('event-branch-filter');
+    // Load events from database
+    async function loadEvents() {
+        try {
+            const response = await fetch(API_BASE + '/events');
+            if (!response.ok) throw new Error('Failed to fetch events');
             
-            // Clear existing options except the first one
-            while (branchFilter.children.length > 1) {
-                branchFilter.removeChild(branchFilter.lastChild);
-            }
+            const events = await response.json();
+            displayEvents(events);
+        } catch (error) {
+            console.error('Error loading events:', error);
+            showToast('Error loading events', 'error');
+        }
+    }
 
+    // Display events in the events section
+    function displayEvents(events) {
+        const eventsList = document.getElementById('events-list');
+        eventsList.innerHTML = '';
+
+        if (!events || events.length === 0) {
+            eventsList.innerHTML = '<div class="data-item text-center">No upcoming events found.</div>';
+            document.getElementById('upcoming-events').textContent = '0';
+            return;
+        }
+
+        // Filter and sort events by date (soonest first)
+        const upcomingEvents = events
+            .filter(event => new Date(event.date) > new Date())
+            .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        upcomingEvents.forEach(function(event) {
+            const eventElement = document.createElement('div');
+            eventElement.className = 'data-item';
+            
+            const eventDate = new Date(event.date);
+            const formattedDate = eventDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            eventElement.innerHTML = `
+                <div class="data-item-header">
+                    <div class="data-item-title">${escapeHtml(event.title)}</div>
+                    <div class="data-item-meta">
+                        <span>${formattedDate}</span>
+                        ${event.event_type ? '<span>• ' + escapeHtml(event.event_type) + '</span>' : ''}
+                    </div>
+                </div>
+                <div class="data-item-content">
+                    <p>${event.description ? escapeHtml(event.description) : 'Join us for this exciting event!'}</p>
+                </div>
+            `;
+
+            eventsList.appendChild(eventElement);
+        });
+
+        // Update dashboard count
+        document.getElementById('upcoming-events').textContent = upcomingEvents.length;
+    }
+
+    // Load news from database
+    async function loadNews() {
+        try {
+            const response = await fetch(API_BASE + '/news');
+            if (!response.ok) throw new Error('Failed to fetch news');
+            
+            const news = await response.json();
+            displayNews(news);
+        } catch (error) {
+            console.error('Error loading news:', error);
+            showToast('Error loading news', 'error');
+        }
+    }
+
+    // Display news in the news section
+    function displayNews(news) {
+        const newsList = document.getElementById('news-list');
+        newsList.innerHTML = '';
+
+        if (!news || news.length === 0) {
+            newsList.innerHTML = '<div class="data-item text-center">No news available.</div>';
+            document.getElementById('recent-news').textContent = '0';
+            return;
+        }
+
+        // Sort news by publish date (newest first)
+        const sortedNews = news.sort((a, b) => new Date(b.publish_date) - new Date(a.publish_date));
+
+        sortedNews.forEach(function(newsItem) {
+            const newsElement = document.createElement('div');
+            newsElement.className = 'data-item';
+            
+            const publishDate = new Date(newsItem.publish_date);
+            const formattedDate = publishDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            newsElement.innerHTML = `
+                <div class="data-item-header">
+                    <div class="data-item-title">${escapeHtml(newsItem.title)}</div>
+                    <div class="data-item-meta">
+                        <span>${formattedDate}</span>
+                    </div>
+                </div>
+                <div class="data-item-content">
+                    <p>${escapeHtml(newsItem.content)}</p>
+                </div>
+            `;
+
+            newsList.appendChild(newsElement);
+        });
+
+        // Update dashboard count with recent news (last 30 days)
+        const recentNewsCount = sortedNews.filter(item => {
+            const newsDate = new Date(item.publish_date);
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            return newsDate > thirtyDaysAgo;
+        }).length;
+
+        document.getElementById('recent-news').textContent = recentNewsCount;
+    }
+
+    // Load branches for filtering
+    async function loadBranches() {
+        try {
+            const response = await fetch(API_BASE + '/branches');
+            if (!response.ok) throw new Error('Failed to fetch branches');
+            
+            const branches = await response.json();
+            populateBranchFilter(branches);
+        } catch (error) {
+            console.error('Error loading branches:', error);
+        }
+    }
+
+    // Populate branch filter dropdown
+    function populateBranchFilter(branches) {
+        const branchFilter = document.getElementById('event-branch-filter');
+        
+        // Clear existing options except the first one
+        while (branchFilter.children.length > 1) {
+            branchFilter.removeChild(branchFilter.lastChild);
+        }
+
+        if (branches && branches.length > 0) {
             branches.forEach(function(branch) {
-                var option = document.createElement('option');
+                const option = document.createElement('option');
                 option.value = branch.id;
                 option.textContent = branch.name;
                 branchFilter.appendChild(option);
             });
         }
+    }
 
-        // Filter events by branch
-        function filterEvents() {
-            var branchId = document.getElementById('event-branch-filter').value;
-            // In a real implementation, this would refetch events from the API
-            // For now, we'll just reload all events
-            loadEvents();
-        }
-
-        // Update dashboard counts and activity
-        function updateDashboardCounts() {
-            // This would normally come from API calls
-            // For now, we'll use sample data
-            var activityList = document.getElementById('recent-activity-list');
-            activityList.innerHTML = '';
-
-            var activities = [
-                'New event "Annual General Meeting" scheduled for December 15',
-                'News article "Welcome New Members" published',
-                'Resource "Member Handbook" updated',
-                'Branch meeting scheduled for next week'
-            ];
-
-            activities.forEach(function(activity) {
-                var activityElement = document.createElement('div');
-                activityElement.className = 'activity-item';
-                activityElement.textContent = activity;
-                activityList.appendChild(activityElement);
-            });
-
-            // Set resource count (sample data)
-            document.getElementById('available-resources').textContent = '12';
-            document.getElementById('branch-members').textContent = '156';
-        }
-
-        // Refresh all data
-        function refreshData() {
-            showToast('Refreshing data...', 'success');
-            loadAllData();
-        }
-
-        // Show different sections
-        function showSection(sectionId) {
-            // Hide all sections
-            var sections = document.querySelectorAll('.content-section');
-            for (var i = 0; i < sections.length; i++) {
-                sections[i].classList.remove('active');
-            }
+    // Load dashboard statistics
+    async function loadDashboardStats() {
+        try {
+            const response = await fetch(API_BASE + '/dashboard/stats');
+            if (!response.ok) throw new Error('Failed to fetch dashboard stats');
             
-            // Remove active class from all nav items
-            var navItems = document.querySelectorAll('.nav-item');
-            for (var j = 0; j < navItems.length; j++) {
-                navItems[j].classList.remove('active');
-            }
+            const stats = await response.json();
+            updateDashboardCounts(stats);
+        } catch (error) {
+            console.error('Error loading dashboard stats:', error);
+            // Use fallback counts if stats endpoint fails
+            updateDashboardCounts(null);
+        }
+    }
+
+    // Update dashboard counts and activity with real data
+    function updateDashboardCounts(stats) {
+        if (stats) {
+            document.getElementById('upcoming-events').textContent = stats.upcomingEvents || 0;
+            document.getElementById('branch-members').textContent = stats.activeUsers || 0;
             
-            // Show selected section
-            document.getElementById(sectionId + '-section').classList.add('active');
+            // Update resources count (you might want to add a resources API endpoint)
+            document.getElementById('available-resources').textContent = '12'; // Placeholder
+        }
+
+        // Load recent activity
+        loadRecentActivity();
+    }
+
+    // Load recent activity
+    async function loadRecentActivity() {
+        try {
+            // Combine recent events and news for activity feed
+            const [eventsResponse, newsResponse] = await Promise.all([
+                fetch(API_BASE + '/events'),
+                fetch(API_BASE + '/news')
+            ]);
+
+            const events = await eventsResponse.json();
+            const news = await newsResponse.json();
+
+            displayRecentActivity(events, news);
+        } catch (error) {
+            console.error('Error loading recent activity:', error);
+        }
+    }
+
+    // Display recent activity
+    function displayRecentActivity(events, news) {
+        const activityList = document.getElementById('recent-activity-list');
+        activityList.innerHTML = '';
+
+        const activities = [];
+
+        // Add recent events (next 7 days)
+        const recentEvents = events.filter(event => {
+            const eventDate = new Date(event.date);
+            const nextWeek = new Date();
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            return eventDate <= nextWeek && eventDate >= new Date();
+        });
+
+        recentEvents.forEach(event => {
+            activities.push(`Upcoming event: "${event.title}" on ${formatDate(event.date)}`);
+        });
+
+        // Add recent news (last 7 days)
+        const recentNews = news.filter(item => {
+            const newsDate = new Date(item.publish_date);
+            const lastWeek = new Date();
+            lastWeek.setDate(lastWeek.getDate() - 7);
+            return newsDate >= lastWeek;
+        });
+
+        recentNews.forEach(newsItem => {
+            activities.push(`New announcement: "${newsItem.title}"`);
+        });
+
+        if (activities.length === 0) {
+            activities.push('No recent activity. Check back later for updates.');
+        }
+
+        // Display activities (limit to 5 most recent)
+        activities.slice(0, 5).forEach(function(activity) {
+            const activityElement = document.createElement('div');
+            activityElement.className = 'activity-item';
+            activityElement.textContent = activity;
+            activityList.appendChild(activityElement);
+        });
+    }
+
+    // Filter events by branch
+    async function filterEvents() {
+        const branchId = document.getElementById('event-branch-filter').value;
+        
+        try {
+            const response = await fetch(API_BASE + '/events');
+            const events = await response.json();
             
-            // Activate corresponding nav item
-            var activeNavItem = document.querySelector('.nav-item[data-section="' + sectionId + '"]');
-            if (activeNavItem) {
-                activeNavItem.classList.add('active');
-            }
-        }
-
-        // Show toast message
-        function showToast(message, type) {
-            var toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = 'toast';
-            if (type === 'error') {
-                toast.classList.add('error');
-            }
-            toast.classList.add('show');
+            const filteredEvents = branchId === 'all' 
+                ? events 
+                : events.filter(event => event.branch_id == branchId);
             
-            setTimeout(function() {
-                toast.classList.remove('show');
-            }, 3000);
+            displayEvents(filteredEvents);
+        } catch (error) {
+            console.error('Error filtering events:', error);
         }
+    }
 
-        // Format date for display
-        function formatDate(dateString) {
-            var date = new Date(dateString);
-            return date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
+    // Refresh all data
+    function refreshData() {
+        showToast('Refreshing data...', 'success');
+        loadAllData();
+    }
+
+    // Show different sections
+    function showSection(sectionId) {
+        // Hide all sections
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => section.classList.remove('active'));
+        
+        // Remove active class from all nav items
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => item.classList.remove('active'));
+        
+        // Show selected section
+        document.getElementById(sectionId + '-section').classList.add('active');
+        
+        // Activate corresponding nav item
+        const activeNavItem = document.querySelector(`.nav-item[data-section="${sectionId}"]`);
+        if (activeNavItem) {
+            activeNavItem.classList.add('active');
         }
+    }
 
-        // Sample data functions (fallback when API is not available)
-        function getSampleEvents() {
-            return [
-                {
-                    id: 1,
-                    title: 'Annual General Meeting',
-                    date: '2024-12-15T10:00:00',
-                    description: 'Yearly general meeting for all members to discuss association matters.',
-                    location: 'Main Auditorium',
-                    event_type: 'meeting',
-                    branch_name: 'Main Branch'
-                },
-                {
-                    id: 2,
-                    title: 'Career Development Workshop',
-                    date: '2024-11-20T14:00:00',
-                    description: 'Workshop on career planning and professional development.',
-                    location: 'Conference Room B',
-                    event_type: 'workshop',
-                    branch_name: 'Main Branch'
-                },
-                {
-                    id: 3,
-                    title: 'Networking Social',
-                    date: '2024-10-05T18:00:00',
-                    description: 'Casual networking event for members to connect.',
-                    location: 'Student Center',
-                    event_type: 'social',
-                    branch_name: 'Engineering Branch'
-                }
-            ];
+    // Show toast message
+    function showToast(message, type) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = 'toast';
+        if (type === 'error') {
+            toast.classList.add('error');
         }
+        toast.classList.add('show');
+        
+        setTimeout(function() {
+            toast.classList.remove('show');
+        }, 3000);
+    }
 
-        function getSampleNews() {
-            return [
-                {
-                    id: 1,
-                    title: 'Welcome New Members',
-                    content: 'We extend a warm welcome to all new members who have joined NaTeSA this semester. We look forward to your participation in our activities.',
-                    publish_date: '2024-09-01T09:00:00',
-                    branch_name: 'All Branches',
-                    author_name: 'Admin'
-                },
-                {
-                    id: 2,
-                    title: 'Upcoming Event Schedule',
-                    content: 'Check out our event calendar for the upcoming semester. We have exciting workshops, seminars, and social events planned.',
-                    publish_date: '2024-08-25T14:30:00',
-                    branch_name: 'Main Branch',
-                    author_name: 'Event Coordinator'
-                },
-                {
-                    id: 3,
-                    title: 'Member Resources Updated',
-                    content: 'The member resources section has been updated with new materials including study guides and career resources.',
-                    publish_date: '2024-08-20T11:15:00',
-                    branch_name: 'All Branches',
-                    author_name: 'Resource Manager'
-                }
-            ];
-        }
+    // Format date for display
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
 
-        function getSampleBranches() {
-            return [
-                { id: 1, name: 'Main Branch' },
-                { id: 2, name: 'Engineering Branch' },
-                { id: 3, name: 'Medical Branch' }
-            ];
-        }
+    // Escape HTML to prevent XSS
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
 
-        // Initialize the dashboard when the page loads
-        document.addEventListener('DOMContentLoaded', initializeDashboard);
-    </script>
+    // Logout function
+    function logout() {
+        localStorage.removeItem('currentUser');
+        window.location.href = '/signin';
+    }
+
+    // Add logout button to header (modify your HTML header)
+    // Add this to your header section:
+    // <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+
+    // Initialize the dashboard when the page loads
+    document.addEventListener('DOMContentLoaded', initializeDashboard);
+</script>
 </body>
 </html>

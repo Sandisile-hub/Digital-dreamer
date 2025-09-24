@@ -74,7 +74,7 @@
       eventsContainer.innerHTML = '<p>Loading events...</p>';
       
       // Make API call to get events
-      fetch(`${API_BASE}/events`)
+      fetch(`https://digital-dreamer.onrender.com/api/events`)
         .then(function(response) {
           return response.json();
         })

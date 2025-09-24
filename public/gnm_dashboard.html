@@ -583,9 +583,15 @@
                 <button class="nav-item" onclick="showSection('resources')" data-section="resources">
                     Resources
                 </button>
+<<<<<<< HEAD
                 <button class="nav-item" onclick="showSection('profile')" data-section="profile">
                     My Profile
                 </button>
+=======
+                <a href="profile.html"><button class="nav-item" onclick="showSection('profile')" data-section="profile">
+                    My Profile
+                </button></a>
+>>>>>>> 82554ee37176d5458e98ea7d33f449ba916cdb2b
             </div>
         </nav>
 
@@ -655,6 +661,7 @@
             </section>
 
             <!-- Profile Section -->
+<<<<<<< HEAD
             <section id="profile-section" class="content-section">
                 <div class="section-header">
                     <h2>My Profile</h2>
@@ -686,6 +693,9 @@
                     </div>
                 </div>
             </section>
+=======
+           
+>>>>>>> 82554ee37176d5458e98ea7d33f449ba916cdb2b
         </main>
     </div>
 
@@ -1106,6 +1116,11 @@
         window.location.href = '/signin';
     }
 
+    // Add logout button to header (modify your HTML header)
+    // Add this to your header section:
+    // <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+
+    // Initialize the dashboard when the page loads
     document.addEventListener('DOMContentLoaded', initializeDashboard);
 </script>
 </body>

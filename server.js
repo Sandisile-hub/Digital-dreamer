@@ -606,8 +606,4 @@ app.use(function(err, req, res, next) {
 // Start server
 app.listen(PORT, function() {
   console.log('Server started on port ' + PORT);
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> 9f19211a7f4bc03070ae4d1fbfa31abf403c0562

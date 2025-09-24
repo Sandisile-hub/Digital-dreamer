@@ -4,7 +4,7 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 
 // Middleware
 app.use(cors());
@@ -341,6 +341,7 @@ app.get('/api/alumni/:id', function(req, res) {
   });
 });
 
+
 // Create new alumni record - only exact fields
 app.post('/api/alumni', function(req, res) {
   var alumni = req.body;
@@ -493,7 +494,7 @@ app.use(function(err, req, res, next) {
 });
 
 // Start server
-app.listen(PORT, function() {
+app.listen(PORT,'0.0.0.0' ,function() {
   console.log('Server started on port ' + PORT);
   console.log('Website: http://localhost:' + PORT);
   console.log('API: http://localhost:' + PORT + '/api');

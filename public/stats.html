@@ -4,792 +4,323 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NaTeSA - Statistics Dashboard</title>
-    <link rel="stylesheet" href="stats.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .nav-item.active {
+            border-bottom: 2px solid #4f46e5;
+            color: #4f46e5;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+    </style>
 </head>
-<body>
-    <!-- Header -->
-    <header class="dashboard-header">
-        <div class="header-content">
-            <div class="logo-section">
-                <h1>NaTeSA Statistics Dashboard</h1>
-                <div class="branch-name">Real-time Analytics & Insights</div>
-            </div><!-- Add this to your header section -->
-<div class="header-user">
-    <span class="user-name" id="current-user-name">Loading...</span>
-    <span class="user-role" id="current-user-role">Member</span>
-    <button class="btn btn-primary btn-sm" onclick="dashboard.refreshAllData()">Refresh Data</button>
-    <!-- Logout button will be added dynamically -->
-</div>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">NaTeSA Statistics Dashboard</h1>
+                <p class="text-gray-600">Real-time Analytics & Insights</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span id="current-user-name" class="text-gray-700">Loading...</span>
+                <span id="current-user-role" class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-sm">Member</span>
+                <button onclick="dashboard.refreshAllData()" class="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700">Refresh Data</button>
+            </div>
         </div>
     </header>
 
-    <!-- Navigation -->
-    <nav class="dashboard-nav">
-        <div class="nav-content">
-            <button class="nav-item active" onclick="showSection('overview')" data-section="overview">
-                Overview
-            </button>
-            <button class="nav-item" onclick="showSection('users')" data-section="users">
-                User Statistics
-            </button>
-            <button class="nav-item" onclick="showSection('events')" data-section="events">
-                Event Analytics
-            </button>
-            <button class="nav-item" onclick="showSection('branches')" data-section="branches">
-                Branch Performance
-            </button>
-            <button class="nav-item" onclick="showSection('alumni')" data-section="alumni">
-                Alumni Tracking
-            </button>
-            <button class="nav-item" onclick="showSection('news')" data-section="news">
-                News & Content
-            </button>
+    <nav class="bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex space-x-8">
+                <button onclick="showSection('overview')" class="nav-item py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Overview</button>
+                <button onclick="showSection('users')" class="nav-item py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">User Statistics</button>
+                <button onclick="showSection('events')" class="nav-item py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Event Analytics</button>
+                <button onclick="showSection('branches')" class="nav-item py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Branch Performance</button>
+                <button onclick="showSection('alumni')" class="nav-item py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Alumni Tracking</button>
+            </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="dashboard-main">
-        <!-- Overview Section -->
-        <section id="overview-section" class="content-section active">
-            <div class="section-header">
-                <h2>Dashboard Overview</h2>
-                <div class="section-actions">
-                    <span class="access-badge access-full" id="overview-access">Full Access</span>
-                    <button class="btn btn-primary" onclick="exportOverviewData()">Export Report</button>
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <section id="overview-section" class="content-section active space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
+                <button onclick="exportOverviewData()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Export Report</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Total Members</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="total-members">0</div>
+                    <div class="text-sm text-gray-600" id="members-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Active Events</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="active-events">0</div>
+                    <div class="text-sm text-gray-600" id="events-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Total Branches</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="total-branches">0</div>
+                    <div class="text-sm text-gray-600" id="branches-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Alumni Count</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="total-alumni">0</div>
+                    <div class="text-sm text-gray-600" id="alumni-trend">Loading...</div>
                 </div>
             </div>
 
-            <!-- Key Metrics -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Total Members</h3>
-                    <div class="stat-number" id="total-members">0</div>
-                    <div class="stat-trend" id="members-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Active Events</h3>
-                    <div class="stat-number" id="active-events">0</div>
-                    <div class="stat-trend" id="events-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Total Branches</h3>
-                    <div class="stat-number" id="total-branches">0</div>
-                    <div class="stat-trend" id="branches-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Alumni Count</h3>
-                    <div class="stat-number" id="total-alumni">0</div>
-                    <div class="stat-trend" id="alumni-trend">Loading...</div>
-                </div>
-            </div>
-
-            <!-- Charts Row 1 -->
-            <div class="charts-grid">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="chart-container">
-                    <div class="chart-header">
-                        <h3>Member Growth Timeline</h3>
-                        <div class="chart-actions">
-                            <select class="filter-select" id="growth-period" onchange="updateMemberGrowthChart()">
-                                <option value="6">Last 6 Months</option>
-                                <option value="12">Last 12 Months</option>
-                                <option value="24">Last 2 Years</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="memberGrowthChart"></canvas>
-                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Member Growth</h3>
+                    <canvas id="memberGrowthChart" height="300"></canvas>
                 </div>
                 <div class="chart-container">
-                    <div class="chart-header">
-                        <h3>User Distribution by Role</h3>
-                        <div class="chart-actions">
-                            <button class="btn btn-secondary btn-sm" onclick="downloadChart('roleDistributionChart')">Download</button>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="roleDistributionChart"></canvas>
-                    </div>
-                </div>
-            </div>
-<div class="chart-container">
-    <div class="chart-header">
-        <h3>Real-time System Metrics</h3>
-        <div class="chart-actions">
-            <span class="access-badge access-full">Live</span>
-        </div>
-    </div>
-    <div class="chart-wrapper">
-        <canvas id="realtimeMetricsChart"></canvas>
-    </div>
-</div>
-            <!-- System Status -->
-            <div class="chart-container">
-                <div class="chart-header">
-                    <h3>System Status & Activity</h3>
-                    <div class="chart-actions">
-                        <span class="access-badge access-full">Live Data</span>
-                    </div>
-                </div>
-                <div class="status-grid">
-                    <div class="status-item">
-                        <span class="status-label">Database Connection</span>
-                        <span class="status-value" id="db-status">Checking...</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-label">Last Data Update</span>
-                        <span class="status-value" id="last-update">Never</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-label">Active Sessions</span>
-                        <span class="status-value" id="active-sessions">0</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-label">API Response Time</span>
-                        <span class="status-value" id="api-response">0ms</span>
-                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">User Distribution by Role</h3>
+                    <canvas id="roleDistributionChart" height="300"></canvas>
                 </div>
             </div>
         </section>
 
-        <!-- User Statistics Section -->
-        <section id="users-section" class="content-section">
-            <div class="section-header">
-                <h2>User Statistics & Analytics</h2>
-                <div class="section-actions">
-                    <span class="access-badge" id="users-access">Partial Access</span>
-                    <button class="btn btn-primary" onclick="exportUserData()">Export User Data</button>
+        <section id="users-section" class="content-section space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900">User Statistics</h2>
+                <button onclick="exportUserData()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Export User Data</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Active Members</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="active-members">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">BEC Members</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="bec-members">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">NEC Members</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="nec-members">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">New Members (30d)</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="new-members-month">0</div>
                 </div>
             </div>
 
-            <!-- User Metrics -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>New Members (30 days)</h3>
-                    <div class="stat-number" id="new-members-month">0</div>
-                    <div class="stat-trend" id="new-members-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Active Members</h3>
-                    <div class="stat-number" id="active-members">0</div>
-                    <div class="stat-trend" id="active-members-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>BEC Members</h3>
-                    <div class="stat-number" id="bec-members">0</div>
-                    <div class="stat-trend" id="bec-members-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>NEC Members</h3>
-                    <div class="stat-number" id="nec-members">0</div>
-                    <div class="stat-trend" id="nec-members-trend">Loading...</div>
-                </div>
-            </div>
-
-            <!-- User Charts -->
-            <div class="charts-grid">
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <h3>Member Registration Timeline</h3>
-                        <div class="chart-actions">
-                            <select class="filter-select" id="registration-year" onchange="updateRegistrationChart()">
-                                <option value="2024">2024</option>
-                                <option value="2023">2023</option>
-                                <option value="2022">2022</option>
-                                <option value="all">All Time</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="registrationTimelineChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <h3>Member Status Distribution</h3>
-                        <div class="chart-actions">
-                            <button class="btn btn-secondary btn-sm" onclick="downloadChart('statusDistributionChart')">Download</button>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="statusDistributionChart"></canvas>
-                    </div>
-                </div>
-            </div>
-<div class="chart-container">
-    <div class="chart-header">
-        <h3>Member Engagement Timeline</h3>
-        <div class="chart-actions">
-            <button class="btn btn-secondary btn-sm" onclick="downloadChart('engagementTimelineChart')">Download</button>
-        </div>
-    </div>
-    <div class="chart-wrapper">
-        <canvas id="engagementTimelineChart"></canvas>
-    </div>
-</div>
-            <!-- User Details Table -->
             <div class="chart-container">
-                <div class="chart-header">
-                    <h3>Recent Member Registrations</h3>
-                    <div class="chart-actions">
-                        <span class="access-badge access-partial">Last 50 Records</span>
-                    </div>
-                </div>
-                <div class="chart-container">
-    <div class="chart-header">
-        <h3>Member Geographic Distribution</h3>
-        <div class="chart-actions">
-            <select class="filter-select" onchange="updateGeoDistribution(this.value)">
-                <option value="province">By Province</option>
-                <option value="university">By University</option>
-            </select>
-        </div>
-    </div>
-    <div class="chart-wrapper">
-        <canvas id="geoDistributionChart"></canvas>
-    </div>
-</div>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Member Registrations</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
                             <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Branch</th>
-                                <th>Join Date</th>
-                                <th>Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Branch</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                             </tr>
                         </thead>
-                        <tbody id="recent-users-table">
-                            <!-- User data will be populated here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-<!-- Add this in overview-section -->
-<div class="charts-grid">
-    <div class="chart-container">
-        <div class="chart-header">
-            <h3>Member Status Distribution</h3>
-            <div class="chart-actions">
-                <button class="btn btn-secondary btn-sm" onclick="downloadChart('statusPieChart')">Download</button>
-            </div>
-        </div>
-        <div class="chart-wrapper">
-            <canvas id="statusPieChart"></canvas>
-        </div>
-    </div>
-    
-    <div class="chart-container">
-        <div class="chart-header">
-            <h3>Monthly Member Growth</h3>
-            <div class="chart-actions">
-                <select class="filter-select" onchange="updateMonthlyGrowth(this.value)">
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                </select>
-            </div>
-        </div>
-        <div class="chart-wrapper">
-            <canvas id="monthlyGrowthBarChart"></canvas>
-        </div>
-    </div>
-</div>
-<div class="charts-grid">
-    <div class="chart-container">
-        <div class="chart-header">
-            <h3>User Role Distribution</h3>
-            <div class="chart-actions">
-                <button class="btn btn-secondary btn-sm" onclick="downloadChart('rolePieChart')">Download</button>
-            </div>
-        </div>
-        <div class="chart-wrapper">
-            <canvas id="rolePieChart"></canvas>
-        </div>
-    </div>
-    
-    <div class="chart-container">
-        <div class="chart-header">
-            <h3>Members by Branch</h3>
-            <div class="chart-actions">
-                <select class="filter-select" onchange="updateBranchMembersChart(this.value)">
-                    <option value="all">All Branches</option>
-                    <option value="top10">Top 10 Branches</option>
-                </select>
-            </div>
-        </div>
-        <div class="chart-wrapper">
-            <canvas id="branchMembersBarChart"></canvas>
-        </div>
-    </div>
-</div>
-        <!-- Event Analytics Section -->
-        <section id="events-section" class="content-section">
-            <div class="section-header">
-                <h2>Event Analytics</h2>
-                <div class="section-actions">
-                    <span class="access-badge" id="events-access">Partial Access</span>
-                    <button class="btn btn-primary" onclick="exportEventData()">Export Event Data</button>
-                </div>
-            </div>
-
-            <!-- Event Metrics -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Total Events</h3>
-                    <div class="stat-number" id="total-events">0</div>
-                    <div class="stat-trend" id="total-events-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Upcoming Events</h3>
-                    <div class="stat-number" id="upcoming-events">0</div>
-                    <div class="stat-trend" id="upcoming-events-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Events This Month</h3>
-                    <div class="stat-number" id="events-this-month">0</div>
-                    <div class="stat-trend" id="events-month-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Avg. Attendance</h3>
-                    <div class="stat-number" id="avg-attendance">0</div>
-                    <div class="stat-trend" id="attendance-trend">Loading...</div>
-                </div>
-            </div>
-<div class="charts-grid">
-    <div class="chart-container">
-        <div class="chart-header">
-            <h3>Events by Type</h3>
-            <div class="chart-actions">
-                <button class="btn btn-secondary btn-sm" onclick="downloadChart('eventTypePieChart')">Download</button>
-            </div>
-        </div>
-        <div class="chart-wrapper">
-            <canvas id="eventTypePieChart"></canvas>
-        </div>
-    </div>
-    
-    <div class="chart-container">
-        <div class="chart-header">
-            <h3>Monthly Events Comparison</h3>
-            <div class="chart-actions">
-                <select class="filter-select" onchange="updateMonthlyEventsChart(this.value)">
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                </select>
-            </div>
-        </div>
-        <div class="chart-wrapper">
-            <canvas id="monthlyEventsBarChart"></canvas>
-        </div>
-    </div>
-</div>
-
-            <!-- Upcoming Events Table -->
-            <div class="chart-container">
-                <div class="chart-header">
-                    <h3>Upcoming Events</h3>
-                    <div class="chart-actions">
-                        <span class="access-badge access-read">Next 30 Days</span>
-                    </div>
-                </div>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Event Title</th>
-                                <th>Date & Time</th>
-                                <th>Type</th>
-                                <th>Branch</th>
-                                <th>Location</th>
-                                <th>Organizer</th>
-                            </tr>
-                        </thead>
-                        <tbody id="upcoming-events-table">
-                            <!-- Event data will be populated here -->
-                        </tbody>
+                        <tbody id="recent-users-table" class="bg-white divide-y divide-gray-200"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <!-- Branch Performance Section -->
-        <section id="branches-section" class="content-section">
-            <div class="section-header">
-                <h2>Branch Performance Analytics</h2>
-                <div class="section-actions">
-                    <span class="access-badge" id="branches-access">Partial Access</span>
-                    <button class="btn btn-primary" onclick="exportBranchData()">Export Branch Data</button>
+        <section id="events-section" class="content-section space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900">Event Analytics</h2>
+                <button onclick="exportEventData()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Export Event Data</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Total Events</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="total-events">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Upcoming Events</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="upcoming-events">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Events This Month</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="events-this-month">0</div>
                 </div>
             </div>
 
-            <!-- Branch Metrics -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Total Branches</h3>
-                    <div class="stat-number" id="branches-total">0</div>
-                    <div class="stat-trend" id="branches-total-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Active Branches</h3>
-                    <div class="stat-number" id="active-branches">0</div>
-                    <div class="stat-trend" id="active-branches-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Avg. Members/Branch</h3>
-                    <div class="stat-number" id="avg-members-branch">0</div>
-                    <div class="stat-trend" id="avg-members-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Top Branch</h3>
-                    <div class="stat-number" id="top-branch-members">0</div>
-                    <div class="stat-trend" id="top-branch-name">Loading...</div>
-                </div>
-            </div>
-<div class="charts-grid">
-    <div class="chart-container">
-        <div class="chart-header">
-            <h3>Branch Size Distribution</h3>
-            <div class="chart-actions">
-                <button class="btn btn-secondary btn-sm" onclick="downloadChart('branchSizePieChart')">Download</button>
-            </div>
-        </div>
-        <div class="chart-wrapper">
-            <canvas id="branchSizePieChart"></canvas>
-        </div>
-    </div>
-    
-    <div class="chart-container">
-        <div class="chart-header">
-            <h3>Branch Performance Ranking</h3>
-            <div class="chart-actions">
-                <select class="filter-select" onchange="updateBranchPerformanceChart(this.value)">
-                    <option value="members">By Members</option>
-                    <option value="events">By Events</option>
-                    <option value="alumni">By Alumni</option>
-                </select>
-            </div>
-        </div>
-        <div class="chart-wrapper">
-            <canvas id="branchPerformanceBarChart"></canvas>
-        </div>
-    </div>
-</div>
-
-            <!-- Branch Performance Table -->
             <div class="chart-container">
-                <div class="chart-header">
-                    <h3>Branch Performance Ranking</h3>
-                    <div class="chart-actions">
-                        <span class="access-badge access-full">Comprehensive View</span>
-                    </div>
-                </div>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Upcoming Events</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
                             <tr>
-                                <th>Rank</th>
-                                <th>Branch Name</th>
-                                <th>University</th>
-                                <th>Total Members</th>
-                                <th>Active Members</th>
-                                <th>Events Held</th>
-                                <th>Alumni Count</th>
-                                <th>Growth Rate</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Event Title</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Branch</th>
                             </tr>
                         </thead>
-                        <tbody id="branch-ranking-table">
-                            <!-- Branch data will be populated here -->
-                        </tbody>
+                        <tbody id="upcoming-events-table" class="bg-white divide-y divide-gray-200"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <!-- Alumni Tracking Section -->
-        <section id="alumni-section" class="content-section">
-            <div class="section-header">
-                <h2>Alumni Tracking & Analytics</h2>
-                <div class="section-actions">
-                    <span class="access-badge" id="alumni-access">Read Access</span>
-                    <button class="btn btn-primary" onclick="exportAlumniData()">Export Alumni Data</button>
+        <section id="branches-section" class="content-section space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900">Branch Performance</h2>
+                <button onclick="exportBranchData()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Export Branch Data</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Total Branches</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="branches-total">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Active Branches</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="active-branches">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Avg Members/Branch</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="avg-members-branch">0</div>
                 </div>
             </div>
 
-            <!-- Alumni Metrics -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Total Alumni</h3>
-                    <div class="stat-number" id="alumni-total">0</div>
-                    <div class="stat-trend" id="alumni-total-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Alumni This Year</h3>
-                    <div class="stat-number" id="alumni-this-year">0</div>
-                    <div class="stat-trend" id="alumni-year-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Employment Rate</h3>
-                    <div class="stat-number" id="employment-rate">0%</div>
-                    <div class="stat-trend" id="employment-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Avg. Graduation Year</h3>
-                    <div class="stat-number" id="avg-graduation-year">0</div>
-                    <div class="stat-trend" id="graduation-trend">Loading...</div>
-                </div>
-            </div>
-
-            <!-- Alumni Charts -->
-            <div class="charts-grid">
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <h3>Alumni by Graduation Year</h3>
-                        <div class="chart-actions">
-                            <button class="btn btn-secondary btn-sm" onclick="downloadChart('alumniByYearChart')">Download</button>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="alumniByYearChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <h3>Alumni Employment Status</h3>
-                        <div class="chart-actions">
-                            <select class="filter-select" id="employment-filter" onchange="updateEmploymentChart()">
-                                <option value="all">All Branches</option>
-                                <option value="main">Main Branch Only</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="employmentStatusChart"></canvas>
-                    </div>
+            <div class="chart-container">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Branch Performance</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Branch Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">University</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Members</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Alumni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="branch-ranking-table" class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
                 </div>
             </div>
         </section>
 
-        <!-- News & Content Section -->
-        <section id="news-section" class="content-section">
-            <div class="section-header">
-                <h2>News & Content Analytics</h2>
-                <div class="section-actions">
-                    <span class="access-badge" id="news-access">Read Access</span>
-                    <button class="btn btn-primary" onclick="exportNewsData()">Export News Data</button>
+        <section id="alumni-section" class="content-section space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900">Alumni Tracking</h2>
+                <button onclick="exportAlumniData()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Export Alumni Data</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Total Alumni</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="alumni-total">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Alumni This Year</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="alumni-this-year">0</div>
                 </div>
             </div>
 
-            <!-- News Metrics -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Total News Articles</h3>
-                    <div class="stat-number" id="total-news">0</div>
-                    <div class="stat-trend" id="total-news-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Articles This Month</h3>
-                    <div class="stat-number" id="news-this-month">0</div>
-                    <div class="stat-trend" id="news-month-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Active Authors</h3>
-                    <div class="stat-number" id="active-authors">0</div>
-                    <div class="stat-trend" id="authors-trend">Loading...</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Avg. Articles/Author</h3>
-                    <div class="stat-number" id="avg-articles-author">0</div>
-                    <div class="stat-trend" id="articles-trend">Loading...</div>
-                </div>
-            </div>
-
-            <!-- News Charts -->
-            <div class="charts-grid">
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <h3>News Publishing Timeline</h3>
-                        <div class="chart-actions">
-                            <button class="btn btn-secondary btn-sm" onclick="downloadChart('newsTimelineChart')">Download</button>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="newsTimelineChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <div class="chart-header">
-                        <h3>News by Branch</h3>
-                        <div class="chart-actions">
-                            <select class="filter-select" id="news-period" onchange="updateNewsByBranchChart()">
-                                <option value="year">This Year</option>
-                                <option value="quarter">This Quarter</option>
-                                <option value="month">This Month</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="newsByBranchChart"></canvas>
-                    </div>
-                </div>
+            <div class="chart-container">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Alumni by Graduation Year</h3>
+                <canvas id="alumniByYearChart" height="300"></canvas>
             </div>
         </section>
     </main>
 
-    <!-- Loading Overlay -->
     <div id="loading-overlay" class="loading-overlay">
-        <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <p>Loading database statistics...</p>
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+            <p class="mt-4 text-gray-600">Loading database statistics...</p>
         </div>
     </div>
 
     <script>
-        // API Base URL - Point to your backend
-        var API_BASE = 'http://localhost:5000/api';
-        
-        // Current user information (to be replaced with session data)
-        var currentUser = {
-            id: 1,
-            name: 'System Administrator',
-            role: 'nec', // Can be 'nec', 'bec', or 'member'
-            branch_id: 1,
-            branch_name: 'National Executive'
-        };
-
-        // Chart instances storage
+        var API_BASE = '/api';
+        var currentUser = JSON.parse(localStorage.getItem('currentUser')) || { name: 'Guest', role: 'member' };
         var charts = {};
-        var lastUpdateTime = null;
 
-        // Initialize dashboard
         function initializeDashboard() {
             showLoading(true);
             
-            // Set user information
             document.getElementById('current-user-name').textContent = currentUser.name;
             document.getElementById('current-user-role').textContent = currentUser.role.toUpperCase();
             
-            // Set access controls based on role
-            setAccessControls();
-            
-            // Load all data from database
             loadAllDataFromDatabase();
             
-            // Initialize empty charts
-            initializeCharts();
-            
-            // Set up auto-refresh every 5 minutes
             setInterval(function() {
                 refreshAllData();
             }, 300000);
         }
 
-        // Set access controls based on user role
-        function setAccessControls() {
-            var sections = ['overview', 'users', 'events', 'branches', 'alumni', 'news'];
-            
-            for (var i = 0; i < sections.length; i++) {
-                var section = sections[i];
-                var accessBadge = document.getElementById(section + '-access');
-                var accessLevel = getAccessLevel(section);
-                
-                accessBadge.textContent = getAccessText(accessLevel);
-                accessBadge.className = 'access-badge ' + getAccessClass(accessLevel);
-            }
+        function showLoading(show) {
+            document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none';
         }
 
-        // Determine access level for a section
-        function getAccessLevel(section) {
-            // TODO: Replace with actual session-based access control
-            if (currentUser.role === 'nec') {
-                return 'full'; // NEC has full access to everything
-            } else if (currentUser.role === 'bec') {
-                // BEC has partial access to most sections
-                if (section === 'overview' || section === 'users' || section === 'events' || section === 'branches') {
-                    return 'partial';
-                } else {
-                    return 'read';
-                }
-            } else {
-                // Regular members have read-only access to basic sections
-                if (section === 'overview' || section === 'events' || section === 'news') {
-                    return 'read';
-                } else {
-                    return 'none';
-                }
-            }
-        }
-
-        function getAccessText(level) {
-            switch(level) {
-                case 'full': return 'Full Access';
-                case 'partial': return 'Partial Access';
-                case 'read': return 'Read Only';
-                default: return 'No Access';
-            }
-        }
-
-        function getAccessClass(level) {
-            switch(level) {
-                case 'full': return 'access-full';
-                case 'partial': return 'access-partial';
-                case 'read': return 'access-read';
-                default: return 'access-none';
-            }
-        }
-
-        // Load all data from database
         function loadAllDataFromDatabase() {
             var startTime = Date.now();
             
-            // Load users data
             loadUsersData();
-            
-            // Load events data
             loadEventsData();
-            
-            // Load branches data
             loadBranchesData();
-            
-            // Load alumni data
             loadAlumniData();
             
-            // Load news data
-            loadNewsData();
-            
-            // Update system status
-            updateSystemStatus(startTime);
+            setTimeout(function() {
+                showLoading(false);
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+            }, 1000);
         }
 
-        // Load users data from database
         function loadUsersData() {
             fetch(API_BASE + '/users')
                 .then(function(response) {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
+                    if (!response.ok) throw new Error('Network error');
                     return response.json();
                 })
                 .then(function(users) {
                     processUsersData(users);
                 })
                 .catch(function(error) {
-                    console.error('Error loading users data:', error);
-                    showError('users', 'Failed to load user data');
+                    console.error('Error loading users:', error);
+                    document.getElementById('total-members').textContent = 'Error';
                 });
         }
 
-        // Process and display users data
         function processUsersData(users) {
-            if (!users || users.length === 0) {
-                showError('users', 'No user data available');
-                return;
-            }
-
-            // Calculate statistics
             var totalMembers = users.length;
             var activeMembers = users.filter(function(user) {
                 return user.status === 'active';
@@ -804,57 +335,37 @@
             }).length;
             
             var newMembersMonth = users.filter(function(user) {
-                var joinDate = new Date(user.created_at);
                 var monthAgo = new Date();
                 monthAgo.setMonth(monthAgo.getMonth() - 1);
-                return joinDate > monthAgo;
+                return new Date(user.created_at || new Date()) > monthAgo;
             }).length;
 
-            // Update UI
-            document.getElementById('total-members').textContent = totalMembers.toLocaleString();
-            document.getElementById('active-members').textContent = activeMembers.toLocaleString();
-            document.getElementById('bec-members').textContent = becMembers.toLocaleString();
-            document.getElementById('nec-members').textContent = necMembers.toLocaleString();
-            document.getElementById('new-members-month').textContent = newMembersMonth.toLocaleString();
+            document.getElementById('total-members').textContent = totalMembers;
+            document.getElementById('active-members').textContent = activeMembers;
+            document.getElementById('bec-members').textContent = becMembers;
+            document.getElementById('nec-members').textContent = necMembers;
+            document.getElementById('new-members-month').textContent = newMembersMonth;
 
-            // Update trends
-            updateTrend('members-trend', 5); // Sample trend data
-            updateTrend('active-members-trend', 3);
-            updateTrend('bec-members-trend', 2);
-            updateTrend('nec-members-trend', 1);
-
-            // Update charts
-            updateUserCharts(users);
-            
-            // Populate recent users table
-            populateRecentUsersTable(users.slice(0, 10));
+            updateMemberGrowthChart(users);
+            updateRoleDistributionChart(users);
+            populateRecentUsersTable(users.slice(-10).reverse());
         }
 
-        // Load events data from database
         function loadEventsData() {
             fetch(API_BASE + '/events')
                 .then(function(response) {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
+                    if (!response.ok) throw new Error('Network error');
                     return response.json();
                 })
                 .then(function(events) {
                     processEventsData(events);
                 })
                 .catch(function(error) {
-                    console.error('Error loading events data:', error);
-                    showError('events', 'Failed to load events data');
+                    console.error('Error loading events:', error);
                 });
         }
 
-        // Process and display events data
         function processEventsData(events) {
-            if (!events || events.length === 0) {
-                showError('events', 'No events data available');
-                return;
-            }
-
             var totalEvents = events.length;
             var upcomingEvents = events.filter(function(event) {
                 return new Date(event.date) > new Date();
@@ -866,44 +377,31 @@
                 return eventDate.getMonth() === now.getMonth() && eventDate.getFullYear() === now.getFullYear();
             }).length;
 
-            // Update UI
-            document.getElementById('total-events').textContent = totalEvents.toLocaleString();
-            document.getElementById('upcoming-events').textContent = upcomingEvents.toLocaleString();
-            document.getElementById('active-events').textContent = upcomingEvents.toLocaleString(); // Same as upcoming for now
-            document.getElementById('events-this-month').textContent = eventsThisMonth.toLocaleString();
+            document.getElementById('total-events').textContent = totalEvents;
+            document.getElementById('active-events').textContent = upcomingEvents;
+            document.getElementById('upcoming-events').textContent = upcomingEvents;
+            document.getElementById('events-this-month').textContent = eventsThisMonth;
 
-            // Update event charts
-            updateEventCharts(events);
-            
-            // Populate upcoming events table
-            populateUpcomingEventsTable(events);
+            populateUpcomingEventsTable(events.filter(function(event) {
+                return new Date(event.date) > new Date();
+            }).slice(0, 10));
         }
 
-        // Load branches data from database
         function loadBranchesData() {
             fetch(API_BASE + '/branches')
                 .then(function(response) {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
+                    if (!response.ok) throw new Error('Network error');
                     return response.json();
                 })
                 .then(function(branches) {
                     processBranchesData(branches);
                 })
                 .catch(function(error) {
-                    console.error('Error loading branches data:', error);
-                    showError('branches', 'Failed to load branches data');
+                    console.error('Error loading branches:', error);
                 });
         }
 
-        // Process and display branches data
         function processBranchesData(branches) {
-            if (!branches || branches.length === 0) {
-                showError('branches', 'No branches data available');
-                return;
-            }
-
             var totalBranches = branches.length;
             var activeBranches = branches.filter(function(branch) {
                 return branch.member_count > 0;
@@ -913,217 +411,264 @@
                 return sum + (branch.member_count || 0);
             }, 0);
             
-            var avgMembersPerBranch = totalMembers / totalBranches;
-            
-            var topBranch = branches.reduce(function(max, branch) {
-                return (branch.member_count || 0) > (max.member_count || 0) ? branch : max;
-            }, branches[0]);
+            var avgMembersPerBranch = totalBranches > 0 ? totalMembers / totalBranches : 0;
 
-            // Update UI
-            document.getElementById('total-branches').textContent = totalBranches.toLocaleString();
-            document.getElementById('branches-total').textContent = totalBranches.toLocaleString();
-            document.getElementById('active-branches').textContent = activeBranches.toLocaleString();
-            document.getElementById('avg-members-branch').textContent = Math.round(avgMembersPerBranch).toLocaleString();
-            document.getElementById('top-branch-members').textContent = (topBranch.member_count || 0).toLocaleString();
-            document.getElementById('top-branch-name').textContent = topBranch.name;
+            document.getElementById('total-branches').textContent = totalBranches;
+            document.getElementById('branches-total').textContent = totalBranches;
+            document.getElementById('active-branches').textContent = activeBranches;
+            document.getElementById('avg-members-branch').textContent = Math.round(avgMembersPerBranch);
 
-            // Update branch charts
-            updateBranchCharts(branches);
-            
-            // Populate branch ranking table
             populateBranchRankingTable(branches);
         }
 
-        // Load alumni data from database
         function loadAlumniData() {
             fetch(API_BASE + '/alumni')
                 .then(function(response) {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
+                    if (!response.ok) throw new Error('Network error');
                     return response.json();
                 })
                 .then(function(alumni) {
                     processAlumniData(alumni);
                 })
                 .catch(function(error) {
-                    console.error('Error loading alumni data:', error);
-                    showError('alumni', 'Failed to load alumni data');
+                    console.error('Error loading alumni:', error);
                 });
         }
 
-        // Process and display alumni data
         function processAlumniData(alumni) {
-            if (!alumni || alumni.length === 0) {
-                showError('alumni', 'No alumni data available');
-                return;
-            }
-
             var totalAlumni = alumni.length;
             var alumniThisYear = alumni.filter(function(alum) {
-                var gradDate = new Date(alum.graduation_date);
-                return gradDate.getFullYear() === new Date().getFullYear();
+                return new Date(alum.graduation_date).getFullYear() === new Date().getFullYear();
             }).length;
-            
-            var employedAlumni = alumni.filter(function(alum) {
-                return alum.current_status === 'employed';
-            }).length;
-            
-            var employmentRate = totalAlumni > 0 ? (employedAlumni / totalAlumni) * 100 : 0;
-            
-            var graduationYears = alumni.map(function(alum) {
-                return new Date(alum.graduation_date).getFullYear();
-            });
-            var avgGraduationYear = graduationYears.reduce(function(sum, year) {
-                return sum + year;
-            }, 0) / graduationYears.length;
 
-            // Update UI
-            document.getElementById('total-alumni').textContent = totalAlumni.toLocaleString();
-            document.getElementById('alumni-total').textContent = totalAlumni.toLocaleString();
-            document.getElementById('alumni-this-year').textContent = alumniThisYear.toLocaleString();
-            document.getElementById('employment-rate').textContent = employmentRate.toFixed(1) + '%';
-            document.getElementById('avg-graduation-year').textContent = Math.round(avgGraduationYear).toString();
+            document.getElementById('total-alumni').textContent = totalAlumni;
+            document.getElementById('alumni-total').textContent = totalAlumni;
+            document.getElementById('alumni-this-year').textContent = alumniThisYear;
 
-            // Update alumni charts
-            updateAlumniCharts(alumni);
+            updateAlumniByYearChart(alumni);
         }
 
-        // Load news data from database
-        function loadNewsData() {
-            fetch(API_BASE + '/news')
-                .then(function(response) {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(function(news) {
-                    processNewsData(news);
-                })
-                .catch(function(error) {
-                    console.error('Error loading news data:', error);
-                    showError('news', 'Failed to load news data');
-                });
-        }
-
-        // Process and display news data
-        function processNewsData(news) {
-            if (!news || news.length === 0) {
-                showError('news', 'No news data available');
-                return;
+        function updateMemberGrowthChart(users) {
+            var ctx = document.getElementById('memberGrowthChart').getContext('2d');
+            
+            if (charts.memberGrowthChart) {
+                charts.memberGrowthChart.destroy();
             }
 
-            var totalNews = news.length;
+            var monthlyData = getMonthlyUserData(users);
             
-            var newsThisMonth = news.filter(function(item) {
-                var publishDate = new Date(item.publish_date);
-                var now = new Date();
-                return publishDate.getMonth() === now.getMonth() && publishDate.getFullYear() === now.getFullYear();
-            }).length;
-            
-            var authors = [...new Set(news.map(function(item) {
-                return item.author_id;
-            }))];
-            var activeAuthors = authors.length;
-            
-            var avgArticlesPerAuthor = totalNews / activeAuthors;
-
-            // Update UI
-            document.getElementById('total-news').textContent = totalNews.toLocaleString();
-            document.getElementById('news-this-month').textContent = newsThisMonth.toLocaleString();
-            document.getElementById('active-authors').textContent = activeAuthors.toLocaleString();
-            document.getElementById('avg-articles-author').textContent = avgArticlesPerAuthor.toFixed(1);
-
-            // Update news charts
-            updateNewsCharts(news);
+            charts.memberGrowthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: monthlyData.labels,
+                    datasets: [{
+                        label: 'Total Members',
+                        data: monthlyData.totals,
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
         }
 
-        // Initialize empty charts
-        function initializeCharts() {
-            // This function would initialize Chart.js instances
-            // Implementation depends on specific chart requirements
-            console.log('Charts initialized');
-        }
-
-        // Update system status information
-        function updateSystemStatus(startTime) {
-            var endTime = Date.now();
-            var responseTime = endTime - startTime;
+        function updateRoleDistributionChart(users) {
+            var ctx = document.getElementById('roleDistributionChart').getContext('2d');
             
-            document.getElementById('db-status').textContent = 'Connected';
-            document.getElementById('db-status').className = 'status-value status-good';
+            if (charts.roleDistributionChart) {
+                charts.roleDistributionChart.destroy();
+            }
+
+            var roleCounts = {
+                'member': 0,
+                'branch_admin': 0,
+                'admin': 0
+            };
+
+            users.forEach(function(user) {
+                roleCounts[user.role] = (roleCounts[user.role] || 0) + 1;
+            });
+
+            charts.roleDistributionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Members', 'Branch Admins', 'NEC Admins'],
+                    datasets: [{
+                        data: [roleCounts.member, roleCounts.branch_admin, roleCounts.admin],
+                        backgroundColor: ['#10b981', '#3b82f6', '#8b5cf6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateAlumniByYearChart(alumni) {
+            var ctx = document.getElementById('alumniByYearChart').getContext('2d');
             
-            document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
-            document.getElementById('api-response').textContent = responseTime + 'ms';
-            document.getElementById('active-sessions').textContent = '1'; // Sample data
-            
-            lastUpdateTime = new Date();
-            showLoading(false);
+            if (charts.alumniByYearChart) {
+                charts.alumniByYearChart.destroy();
+            }
+
+            var yearCounts = {};
+            alumni.forEach(function(alum) {
+                var year = new Date(alum.graduation_date).getFullYear();
+                yearCounts[year] = (yearCounts[year] || 0) + 1;
+            });
+
+            var years = Object.keys(yearCounts).sort();
+            var counts = years.map(function(year) { return yearCounts[year]; });
+
+            charts.alumniByYearChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: 'Alumni Count',
+                        data: counts,
+                        backgroundColor: '#f59e0b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
         }
 
-        // Show/hide loading overlay
-        function showLoading(show) {
-            var overlay = document.getElementById('loading-overlay');
-            overlay.style.display = show ? 'flex' : 'none';
+        function getMonthlyUserData(users) {
+            var monthlyData = {};
+            var currentDate = new Date();
+            var sixMonthsAgo = new Date();
+            sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
+
+            for (var i = 0; i < 6; i++) {
+                var date = new Date();
+                date.setMonth(currentDate.getMonth() - i);
+                var key = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0');
+                monthlyData[key] = 0;
+            }
+
+            users.forEach(function(user) {
+                var joinDate = new Date(user.created_at || new Date());
+                if (joinDate >= sixMonthsAgo) {
+                    var key = joinDate.getFullYear() + '-' + (joinDate.getMonth() + 1).toString().padStart(2, '0');
+                    monthlyData[key] = (monthlyData[key] || 0) + 1;
+                }
+            });
+
+            var labels = Object.keys(monthlyData).reverse();
+            var totals = [];
+            var runningTotal = 0;
+
+            labels.forEach(function(month) {
+                runningTotal += monthlyData[month];
+                totals.push(runningTotal);
+            });
+
+            return {
+                labels: labels.map(function(label) {
+                    var parts = label.split('-');
+                    return new Date(parts[0], parts[1] - 1).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+                }),
+                totals: totals
+            };
         }
 
-        // Show error message
-        function showError(section, message) {
-            console.error('Error in ' + section + ': ' + message);
-            // You could add visual error indicators here
+        function populateRecentUsersTable(users) {
+            var tbody = document.getElementById('recent-users-table');
+            tbody.innerHTML = '';
+
+            users.forEach(function(user) {
+                var row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.name || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.email || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.role || 'member'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.branch_id || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${user.status || 'active'}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
         }
 
-        // Update trend indicator
-        function updateTrend(elementId, change) {
-            var element = document.getElementById(elementId);
-            var trendClass = change > 0 ? 'trend-up' : (change < 0 ? 'trend-down' : 'trend-neutral');
-            var symbol = change > 0 ? '↗' : (change < 0 ? '↘' : '→');
-            
-            element.textContent = symbol + ' ' + Math.abs(change) + '% from last period';
-            element.className = 'stat-trend ' + trendClass;
+        function populateUpcomingEventsTable(events) {
+            var tbody = document.getElementById('upcoming-events-table');
+            tbody.innerHTML = '';
+
+            events.forEach(function(event) {
+                var row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${event.title || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${new Date(event.date).toLocaleDateString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${event.event_type || 'General'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${event.branch_id || 'N/A'}</td>
+                `;
+                tbody.appendChild(row);
+            });
         }
 
-        // Refresh all data
+        function populateBranchRankingTable(branches) {
+            var tbody = document.getElementById('branch-ranking-table');
+            tbody.innerHTML = '';
+
+            var sortedBranches = branches.sort(function(a, b) {
+                return (b.member_count || 0) - (a.member_count || 0);
+            });
+
+            sortedBranches.forEach(function(branch) {
+                var row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${branch.name || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${branch.university || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${branch.member_count || 0}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${branch.alumni_count || 0}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(function(section) {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-item').forEach(function(item) {
+                item.classList.remove('active');
+            });
+
+            document.getElementById(sectionId + '-section').classList.add('active');
+            event.target.classList.add('active');
+        }
+
         function refreshAllData() {
             showLoading(true);
             loadAllDataFromDatabase();
         }
 
-        // Show specific section
-        function showSection(sectionId) {
-            // Check access permissions
-            if (getAccessLevel(sectionId) === 'none') {
-                alert('Access denied: You do not have permission to view this section.');
-                return;
-            }
-
-            // Hide all sections
-            var sections = document.querySelectorAll('.content-section');
-            for (var i = 0; i < sections.length; i++) {
-                sections[i].classList.remove('active');
-            }
-            
-            // Remove active class from all nav items
-            var navItems = document.querySelectorAll('.nav-item');
-            for (var j = 0; j < navItems.length; j++) {
-                navItems[j].classList.remove('active');
-            }
-            
-            // Show selected section
-            document.getElementById(sectionId + '-section').classList.add('active');
-            
-            // Activate corresponding nav item
-            var activeNavItem = document.querySelector('.nav-item[data-section="' + sectionId + '"]');
-            if (activeNavItem) {
-                activeNavItem.classList.add('active');
-            }
-        }
-
-        // Export functions (placeholder implementations)
         function exportOverviewData() {
             alert('Exporting overview data...');
-            // Implementation would generate and download CSV/PDF
         }
 
         function exportUserData() {
@@ -1142,132 +687,10 @@
             alert('Exporting alumni data...');
         }
 
-        function exportNewsData() {
-            alert('Exporting news data...');
-        }
+        var dashboard = {
+            refreshAllData: refreshAllData
+        };
 
-        function downloadChart(chartId) {
-            alert('Downloading chart: ' + chartId);
-            // Implementation would export chart as image
-        }
-
-        // Placeholder functions for chart updates
-        function updateMemberGrowthChart() {
-            var period = document.getElementById('growth-period').value;
-            console.log('Updating member growth chart for period: ' + period);
-        }
-
-        function updateRegistrationChart() {
-            var year = document.getElementById('registration-year').value;
-            console.log('Updating registration chart for year: ' + year);
-        }
-
-        function updateEventsByTypeChart() {
-            var period = document.getElementById('event-type-period').value;
-            console.log('Updating events by type chart for period: ' + period);
-        }
-
-        function updateBranchActivityChart() {
-            var metric = document.getElementById('activity-metric').value;
-            console.log('Updating branch activity chart for metric: ' + metric);
-        }
-
-        function updateEmploymentChart() {
-            var filter = document.getElementById('employment-filter').value;
-            console.log('Updating employment chart with filter: ' + filter);
-        }
-
-        function updateNewsByBranchChart() {
-            var period = document.getElementById('news-period').value;
-            console.log('Updating news by branch chart for period: ' + period);
-        }
-
-        function updateUserCharts(users) {
-            console.log('Updating user charts with', users.length, 'users');
-        }
-
-        function updateEventCharts(events) {
-            console.log('Updating event charts with', events.length, 'events');
-        }
-
-        function updateBranchCharts(branches) {
-            console.log('Updating branch charts with', branches.length, 'branches');
-        }
-
-        function updateAlumniCharts(alumni) {
-            console.log('Updating alumni charts with', alumni.length, 'alumni');
-        }
-
-        function updateNewsCharts(news) {
-            console.log('Updating news charts with', news.length, 'news items');
-        }
-
-        function populateRecentUsersTable(users) {
-            var tbody = document.getElementById('recent-users-table');
-            tbody.innerHTML = '';
-            
-            users.forEach(function(user) {
-                var row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${user.name || 'N/A'}</td>
-                    <td>${user.email || 'N/A'}</td>
-                    <td><span class="role-badge role-${user.role || 'member'}">${user.role || 'member'}</span></td>
-                    <td>${user.branch_name || 'N/A'}</td>
-                    <td>${user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}</td>
-                    <td><span class="status-badge status-${user.status || 'active'}">${user.status || 'active'}</span></td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function populateUpcomingEventsTable(events) {
-            var tbody = document.getElementById('upcoming-events-table');
-            tbody.innerHTML = '';
-            
-            var upcomingEvents = events.filter(function(event) {
-                return new Date(event.date) > new Date();
-            }).slice(0, 10);
-            
-            upcomingEvents.forEach(function(event) {
-                var row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${event.title || 'N/A'}</td>
-                    <td>${event.date ? new Date(event.date).toLocaleString() : 'N/A'}</td>
-                    <td>${event.event_type || 'N/A'}</td>
-                    <td>${event.branch_name || 'N/A'}</td>
-                    <td>${event.location || 'N/A'}</td>
-                    <td>${event.created_by_name || 'N/A'}</td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        function populateBranchRankingTable(branches) {
-            var tbody = document.getElementById('branch-ranking-table');
-            tbody.innerHTML = '';
-            
-            // Sort branches by member count
-            var sortedBranches = branches.sort(function(a, b) {
-                return (b.member_count || 0) - (a.member_count || 0);
-            });
-            
-            sortedBranches.forEach(function(branch, index) {
-                var row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>#${index + 1}</td>
-                    <td>${branch.name || 'N/A'}</td>
-                    <td>${branch.university || 'N/A'}</td>
-                    <td>${(branch.member_count || 0).toLocaleString()}</td>
-                    <td>${Math.round((branch.member_count || 0) * 0.7).toLocaleString()}</td> <!-- Estimated active -->
-                    <td>${(branch.alumni_count || 0).toLocaleString()}</td> <!-- Using alumni count as event proxy -->
-                    <td>${(branch.alumni_count || 0).toLocaleString()}</td> <!-- Alumni count -->
-                    <td>+${Math.round(Math.random() * 20)}%</td> <!-- Sample growth rate -->
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-        // Initialize dashboard when page loads
         document.addEventListener('DOMContentLoaded', initializeDashboard);
     </script>
 </body>

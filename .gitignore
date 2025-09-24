@@ -3,3 +3,4 @@ PG_PORT=5432
 PG_USER=postgres
 PG_PASSWORD=DigitalDreamer
 PG_DATABASE=natesa-digitaldreamer-db
+node_modules

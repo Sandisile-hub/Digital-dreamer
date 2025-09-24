@@ -74,6 +74,7 @@
       eventsContainer.innerHTML = '<p>Loading events...</p>';
       
       // Make API call to get events
+      console.log(API_BASE);
       fetch(`${API_BASE}/events`)
         .then(function(response) {
           return response.json();

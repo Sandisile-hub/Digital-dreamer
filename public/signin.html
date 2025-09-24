@@ -219,10 +219,12 @@
         }
 
         function redirectBasedOnRole(role) {
-            if (role === 'admin') {
+            if (role === 'nec') {
                 window.location.href = 'nec_dashboard.html';
-            } else if (role === 'branch_admin') {
+            } else if (role === 'bec') {
                 window.location.href = 'bec_dashboard.html';
+            } else if (role === 'alumni') {
+                window.location.href = 'alumni_dashboard.html';
             } else {
                 window.location.href = 'gnm_dashboard.html';
             }
@@ -258,5 +260,6 @@
             input.addEventListener('input', hideMessages);
         });
     </script>
+    
 </body>
 </html>

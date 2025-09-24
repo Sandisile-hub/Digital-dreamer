@@ -17,6 +17,45 @@ const database = require('./config/database');
 // Test database when server starts
 database.testConnection();
 
+// Middleware to check user authentication and role
+function checkAuth(req, res, next) {
+  // For API routes, skip this middleware
+  if (req.path.startsWith('/api/')) {
+    return next();
+  }
+  
+  // Allow access to signin/signup pages without authentication
+  if (req.path === '/' || req.path === '/signin' || req.path === '/signup') {
+    return next();
+  }
+  
+  // Check if user is authenticated (you can use sessions, JWT, or simple query param)
+  // For simplicity, we'll use a query parameter or check session
+  const userId = req.query.userId || req.session?.userId;
+  
+  if (!userId) {
+    return res.redirect('/signin');
+  }
+  
+  // Get user role from database
+  var sql = 'SELECT role, status FROM users WHERE id = $1';
+  database.query(sql, [userId], function(error, result) {
+    if (error || result.rows.length === 0) {
+      console.log('Error verifying user:', error);
+      return res.redirect('/signin');
+    }
+    
+    const user = result.rows[0];
+    
+    // Store user info for route handling
+    req.user = user;
+    next();
+  });
+}
+
+// Apply auth middleware to all non-API routes
+app.use(checkAuth);
+
 // Basic route - serve signin page
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'signin.html'));
@@ -36,6 +75,103 @@ app.get('/signin', function(req, res) {
 app.get('/stats', function(req, res) {
   res.sendFile(path.join(__dirname, 'public', 'stats.html'));
 });
+
+// Role-based dashboard routes
+app.get('/dashboard', function(req, res) {
+  // Redirect based on user role
+  switch(req.user.role) {
+    case 'member':
+      res.sendFile(path.join(__dirname, 'public', 'gnm_dashboard.html'));
+      break;
+    case 'nec':
+      res.sendFile(path.join(__dirname, 'public', 'nec_dashboard.html'));
+      break;
+    case 'bec':
+      res.sendFile(path.join(__dirname, 'public', 'bec_dashboard.html'));
+      break;
+    case 'alumni':
+      res.sendFile(path.join(__dirname, 'public', 'alumni_dashboard.html'));
+      break;
+    default:
+      // If role doesn't match any, redirect to signin
+      res.redirect('/signin');
+  }
+});
+
+// Direct dashboard routes with role protection
+app.get('/gnm_dashboard', function(req, res) {
+  if (req.user.role === 'member') {
+    res.sendFile(path.join(__dirname, 'public', 'gnm_dashboard.html'));
+  } else {
+    res.status(403).send('Access denied. Member access required.');
+  }
+});
+
+app.get('/nec_dashboard', function(req, res) {
+  if (req.user.role === 'nec') {
+    res.sendFile(path.join(__dirname, 'public', 'nec_dashboard.html'));
+  } else {
+    res.status(403).send('Access denied. NEC access required.');
+  }
+});
+
+app.get('/bec_dashboard', function(req, res) {
+  if (req.user.role === 'bec') {
+    res.sendFile(path.join(__dirname, 'public', 'bec_dashboard.html'));
+  } else {
+    res.status(403).send('Access denied. BEC access required.');
+  }
+});
+
+app.get('/alumni_dashboard', function(req, res) {
+  if (req.user.role === 'alumni') {
+    res.sendFile(path.join(__dirname, 'public', 'alumni_dashboard.html'));
+  } else {
+    res.status(403).send('Access denied. Alumni access required.');
+  }
+});
+
+// Updated login API to handle session/redirection
+app.post('/api/login', function(req, res) {
+  var email = req.body.email;
+  var password = req.body.password;
+  
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' });
+  }
+  
+  var sql = 'SELECT id, name, email, role, branch_id, is_bec_member, nec_position, bec_position, status FROM users WHERE email = $1 AND password = $2';
+  
+  database.query(sql, [email, password], function(error, result) {
+    if (error) {
+      console.log('Login error:', error);
+      res.status(500).json({ error: 'Server error' });
+    } else if (result.rows.length === 0) {
+      res.status(401).json({ error: 'Invalid email or password' });
+    } else {
+      const user = result.rows[0];
+      
+      // Return user info including role for frontend redirection
+      res.json({ 
+        success: true, 
+        user: user,
+        message: 'Login successful',
+        redirectUrl: getDashboardUrl(user.role)
+      });
+    }
+  });
+});
+
+// Helper function to get dashboard URL based on role
+function getDashboardUrl(role) {
+  switch(role) {
+    case 'member': return '/gnm_dashboard';
+    case 'nec': return '/nec_dashboard';
+    case 'bec': return '/bec_dashboard';
+    case 'alumni': return '/alumni_dashboard';
+    default: return '/dashboard';
+  }
+}
 
 // Health check
 app.get('/api/health', function(req, res) {
@@ -102,7 +238,7 @@ app.post('/api/users', function(req, res) {
         user.name,
         user.email, 
         user.password,
-        user.role || 'member',
+        user.role || 'member', // Default to 'member'
         user.branch_id || 1,
         user.is_bec_member || false,
         user.nec_position || null,
@@ -122,32 +258,7 @@ app.post('/api/users', function(req, res) {
   });
 });
 
-// Login route - only exact fields needed
-app.post('/api/login', function(req, res) {
-  var email = req.body.email;
-  var password = req.body.password;
-  
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required' });
-  }
-  
-  var sql = 'SELECT id, name, email, role, branch_id, is_bec_member, nec_position, bec_position, status FROM users WHERE email = $1 AND password = $2';
-  
-  database.query(sql, [email, password], function(error, result) {
-    if (error) {
-      console.log('Login error:', error);
-      res.status(500).json({ error: 'Server error' });
-    } else if (result.rows.length === 0) {
-      res.status(401).json({ error: 'Invalid email or password' });
-    } else {
-      res.json({ 
-        success: true, 
-        user: result.rows[0],
-        message: 'Login successful' 
-      });
-    }
-  });
-});
+// ... rest of your existing API routes remain the same ...
 
 // Get all branches - only exact fields
 app.get('/api/branches', function(req, res) {
@@ -341,7 +452,6 @@ app.get('/api/alumni/:id', function(req, res) {
   });
 });
 
-
 // Create new alumni record - only exact fields
 app.post('/api/alumni', function(req, res) {
   var alumni = req.body;
@@ -481,13 +591,10 @@ app.get('/api/dashboard/stats', function(req, res) {
 app.use('/api/*', function(req, res) {
   res.status(404).json({ error: 'API route not found' });
 });
-// Dashboard route
-app.get('/dashboard', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public', 'gnm_dashboard.html'));
-});
-// Handle all other routes - serve signin page
+
+// Handle all other routes - redirect to signin
 app.get('*', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public', 'signin.html'));
+  res.redirect('/signin');
 });
 
 // Error handling middleware
@@ -499,7 +606,4 @@ app.use(function(err, req, res, next) {
 // Start server
 app.listen(PORT, function() {
   console.log('Server started on port ' + PORT);
-  console.log('Website: http://localhost:' + PORT);
-  console.log('API: http://localhost:' + PORT + '/api');
-  console.log('Stats Dashboard: http://localhost:' + PORT + '/stats');
 });

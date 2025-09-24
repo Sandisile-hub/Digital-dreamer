@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NaTeSA - General Member Dashboard</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #059669;
+            --secondary-dark: #047857;
+            --accent-color: #dc2626;
+            --success-color: #16a34a;
+            --warning-color: #ca8a04;
+            --error-color: #dc2626;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 8px;
+            --spacing: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.5;
+            color: var(--gray-700);
+            background-color: var(--gray-50);
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loader {
+            text-align: center;
+            color: white;
+        }
+
+        .natesa-logo {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing);
+            letter-spacing: 2px;
+        }
+
+        .loading-text {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.9; }
+            50% { opacity: 0.6; }
+        }
+
+        /* App Container */
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .app-header {
+            background: white;
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: calc(var(--spacing) * 2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo-section h1 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: calc(var(--spacing) / 2);
+        }
+
+        .branch-name {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: calc(var(--spacing) * 2);
+        }
+
+        .user-name {
+            font-weight: 500;
+        }
+
+        .user-role {
+            background-color: var(--primary-color);
+            color: white;
+            padding: calc(var(--spacing) / 2) var(--spacing);
+            border-radius: calc(var(--radius) / 2);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        /* Navigation */
+        .app-nav {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            overflow-x: auto;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            padding: 0 calc(var(--spacing) * 2);
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            padding: calc(var(--spacing) * 2);
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--gray-600);
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .nav-item:hover {
+            color: var(--primary-color);
+            background-color: var(--gray-50);
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        /* Main Content */
+        .app-main {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: calc(var(--spacing) * 3) calc(var(--spacing) * 2);
+            width: 100%;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: calc(var(--spacing) * 3);
+            gap: calc(var(--spacing) * 2);
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: var(--gray-800);
+            flex: 1;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: var(--spacing);
+        }
+
+        /* Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: calc(var(--spacing) * 2);
+            margin-bottom: calc(var(--spacing) * 3);
+        }
+
+        .dashboard-card {
+            background: white;
+            padding: calc(var(--spacing) * 3);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            text-align: center;
+        }
+
+        .dashboard-card h3 {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--spacing);
+        }
+
+        .dashboard-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .dashboard-content {
+            background: white;
+            padding: calc(var(--spacing) * 3);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+
+        .recent-activity h3 {
+            margin-bottom: calc(var(--spacing) * 2);
+            color: var(--gray-800);
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing);
+        }
+
+        .activity-item {
+            padding: var(--spacing);
+            background-color: var(--gray-50);
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: calc(var(--spacing) * 2);
+            margin-bottom: calc(var(--spacing) * 3);
+            flex-wrap: wrap;
+        }
+
+        .filters select {
+            padding: var(--spacing) calc(var(--spacing) * 1.5);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            background: white;
+        }
+
+        /* Data Lists */
+        .data-list {
+            display: flex;
+            flex-direction: column;
+            gap: calc(var(--spacing) * 2);
+        }
+
+        .data-item {
+            background: white;
+            padding: calc(var(--spacing) * 3);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s ease;
+        }
+
+        .data-item:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .data-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: calc(var(--spacing) * 1.5);
+            flex-wrap: wrap;
+            gap: var(--spacing);
+        }
+
+        .data-item-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .data-item-meta {
+            display: flex;
+            gap: var(--spacing);
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            flex-wrap: wrap;
+        }
+
+        .data-item-actions {
+            display: flex;
+            gap: var(--spacing);
+        }
+
+        .data-item-content {
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+
+        /* Profile Content */
+        .profile-content {
+            background: white;
+            padding: calc(var(--spacing) * 4);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            max-width: 500px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: calc(var(--spacing) * 2.5);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing);
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: calc(var(--spacing) * 1.5);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 3);
+            font-size: 1rem;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            gap: var(--spacing);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background-color: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--gray-300);
+        }
+
+        .btn-sm {
+            padding: var(--spacing) calc(var(--spacing) * 2);
+            font-size: 0.875rem;
+        }
+
+        /* Toast Messages */
+        .toast {
+            position: fixed;
+            top: calc(var(--spacing) * 3);
+            right: calc(var(--spacing) * 3);
+            padding: calc(var(--spacing) * 2);
+            background: var(--success-color);
+            color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 2000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: var(--error-color);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: calc(var(--spacing) / 2) var(--spacing);
+            border-radius: calc(var(--radius) / 2);
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background-color: rgba(22, 163, 74, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-inactive {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: var(--error-color);
+        }
+
+        .role-badge {
+            padding: calc(var(--spacing) / 2) var(--spacing);
+            border-radius: calc(var(--radius) / 2);
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .role-member {
+            background-color: rgba(107, 114, 128, 0.1);
+            color: var(--gray-600);
+        }
+
+        .role-alumni {
+            background-color: rgba(202, 138, 4, 0.1);
+            color: var(--warning-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: var(--spacing);
+                text-align: center;
+            }
+            
+            .nav-content {
+                padding: 0 var(--spacing);
+            }
+            
+            .nav-item {
+                padding: var(--spacing) calc(var(--spacing) * 1.5);
+                font-size: 0.9rem;
+            }
+            
+            .app-main {
+                padding: calc(var(--spacing) * 2) var(--spacing);
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+            
+            .data-item-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .data-item-actions {
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-number {
+                font-size: 2rem;
+            }
+            
+            .nav-content {
+                overflow-x: auto;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            
+            .nav-content::-webkit-scrollbar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loader">
+            <div class="natesa-logo">NaTeSA</div>
+            <div class="loading-text">General Member Dashboard</div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app-container" class="app-container" style="display: none;">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1>NaTeSA</h1>
+                    <span id="user-branch-name" class="branch-name">General Member Portal</span>
+                </div>
+                <div class="header-user">
+                    <span id="user-name" class="user-name">General Member</span>
+                    <span id="user-role" class="user-role">Member</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="app-nav">
+            <div class="nav-content">
+                <button class="nav-item active" onclick="showSection('dashboard')" data-section="dashboard">
+                    Dashboard
+                </button>
+                <button class="nav-item" onclick="showSection('events')" data-section="events">
+                    Events
+                </button>
+                <button class="nav-item" onclick="showSection('news')" data-section="news">
+                    News
+                </button>
+                <button class="nav-item" onclick="showSection('resources')" data-section="resources">
+                    Resources
+                </button>
+                <button class="nav-item" onclick="showSection('profile')" data-section="profile">
+                    My Profile
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="content-section active">
+                <div class="section-header">
+                    <h2>Member Dashboard</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="refreshData()">Refresh Data</button>
+                    </div>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>Upcoming Events</h3>
+                        <div class="dashboard-number" id="upcoming-events">0</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Recent News</h3>
+                        <div class="dashboard-number" id="recent-news">0</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>Available Resources</h3>
+                        <div class="dashboard-number" id="available-resources">0</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3>My Branch</h3>
+                        <div class="dashboard-number" id="branch-members">0</div>
+                    </div>
+                </div>
+                <div class="dashboard-content">
+                    <div class="recent-activity">
+                        <h3>Latest Updates</h3>
+                        <div id="recent-activity-list" class="activity-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Events Section -->
+            <section id="events-section" class="content-section">
+                <div class="section-header">
+                    <h2>Upcoming Events</h2>
+                    <div class="section-actions">
+                        <select id="event-branch-filter" onchange="filterEvents()">
+                            <option value="all">All Branches</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="events-list" class="data-list"></div>
+            </section>
+
+            <!-- News Section -->
+            <section id="news-section" class="content-section">
+                <div class="section-header">
+                    <h2>News & Announcements</h2>
+                </div>
+                <div id="news-list" class="data-list"></div>
+            </section>
+
+            <!-- Resources Section -->
+            <section id="resources-section" class="content-section">
+                <div class="section-header">
+                    <h2>Member Resources</h2>
+                </div>
+                <div id="resources-list" class="data-list"></div>
+            </section>
+
+            <!-- Profile Section -->
+            <section id="profile-section" class="content-section">
+                <div class="section-header">
+                    <h2>My Profile</h2>
+                </div>
+                <div class="profile-content">
+                    <div class="form-group">
+                        <label>Member ID</label>
+                        <div class="form-control" id="profile-id">GM-001</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <div class="form-control" id="profile-name">General Member</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <div class="form-control" id="profile-email">member@natesa.com</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Branch</label>
+                        <div class="form-control" id="profile-branch">Main Branch</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Member Since</label>
+                        <div class="form-control" id="profile-join-date">January 2024</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <div class="status-badge status-active" id="profile-status">Active</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="toast" class="toast"></div>
+<script>
+    // Database connection and API endpoints - use relative paths for production
+    var API_BASE = window.location.origin + '/api';
+    
+    // Current user data (will be populated after login)
+    var currentUser = null;
+
+    // Main initialization function
+    async function initializeDashboard() {
+        // Check if user is logged in
+        await checkUserLogin();
+        
+        // Hide loading screen after 1.5 seconds
+        setTimeout(function() {
+            document.getElementById('loading-screen').style.opacity = '0';
+            setTimeout(function() {
+                document.getElementById('loading-screen').style.display = 'none';
+                document.getElementById('app-container').style.display = 'flex';
+                loadAllData();
+            }, 500);
+        }, 1500);
+    }
+
+    // Check if user is logged in and get user data
+    async function checkUserLogin() {
+        try {
+            // Try to get user data from session or redirect to login
+            const userData = localStorage.getItem('currentUser');
+            if (userData) {
+                currentUser = JSON.parse(userData);
+                setupUserProfile();
+            } else {
+                // Redirect to login if not authenticated
+                window.location.href = '/signin';
+                return;
+            }
+        } catch (error) {
+            console.error('Login check failed:', error);
+            window.location.href = '/signin';
+        }
+    }
+
+    // Set up user profile information with real data
+    function setupUserProfile() {
+        if (!currentUser) return;
+
+        document.getElementById('user-name').textContent = currentUser.name;
+        document.getElementById('user-role').textContent = currentUser.role;
+        document.getElementById('user-branch-name').textContent = currentUser.branch_name || 'General Member Portal';
+        
+        // Profile section
+        document.getElementById('profile-id').textContent = 'GM-' + currentUser.id.toString().padStart(3, '0');
+        document.getElementById('profile-name').textContent = currentUser.name;
+        document.getElementById('profile-email').textContent = currentUser.email;
+        document.getElementById('profile-branch').textContent = currentUser.branch_name || 'Main Branch';
+        document.getElementById('profile-join-date').textContent = formatDate(new Date().toISOString());
+        
+        // Set status badge
+        const statusBadge = document.getElementById('profile-status');
+        statusBadge.textContent = currentUser.status || 'Active';
+        statusBadge.className = `status-badge status-${(currentUser.status || 'active').toLowerCase()}`;
+    }
+
+    // Load all data for the dashboard
+    async function loadAllData() {
+        try {
+            await Promise.all([
+                loadEvents(),
+                loadNews(),
+                loadBranches(),
+                loadDashboardStats()
+            ]);
+        } catch (error) {
+            console.error('Error loading dashboard data:', error);
+            showToast('Error loading data. Please try again.', 'error');
+        }
+    }
+
+    // Load events from database
+    async function loadEvents() {
+        try {
+            const response = await fetch(API_BASE + '/events');
+            if (!response.ok) throw new Error('Failed to fetch events');
+            
+            const events = await response.json();
+            displayEvents(events);
+        } catch (error) {
+            console.error('Error loading events:', error);
+            showToast('Error loading events', 'error');
+        }
+    }
+
+    // Display events in the events section
+    function displayEvents(events) {
+        const eventsList = document.getElementById('events-list');
+        eventsList.innerHTML = '';
+
+        if (!events || events.length === 0) {
+            eventsList.innerHTML = '<div class="data-item text-center">No upcoming events found.</div>';
+            document.getElementById('upcoming-events').textContent = '0';
+            return;
+        }
+
+        // Filter and sort events by date (soonest first)
+        const upcomingEvents = events
+            .filter(event => new Date(event.date) > new Date())
+            .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        upcomingEvents.forEach(function(event) {
+            const eventElement = document.createElement('div');
+            eventElement.className = 'data-item';
+            
+            const eventDate = new Date(event.date);
+            const formattedDate = eventDate.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            eventElement.innerHTML = `
+                <div class="data-item-header">
+                    <div class="data-item-title">${escapeHtml(event.title)}</div>
+                    <div class="data-item-meta">
+                        <span>${formattedDate}</span>
+                        ${event.event_type ? '<span>• ' + escapeHtml(event.event_type) + '</span>' : ''}
+                    </div>
+                </div>
+                <div class="data-item-content">
+                    <p>${event.description ? escapeHtml(event.description) : 'Join us for this exciting event!'}</p>
+                </div>
+            `;
+
+            eventsList.appendChild(eventElement);
+        });
+
+        // Update dashboard count
+        document.getElementById('upcoming-events').textContent = upcomingEvents.length;
+    }
+
+    // Load news from database
+    async function loadNews() {
+        try {
+            const response = await fetch(API_BASE + '/news');
+            if (!response.ok) throw new Error('Failed to fetch news');
+            
+            const news = await response.json();
+            displayNews(news);
+        } catch (error) {
+            console.error('Error loading news:', error);
+            showToast('Error loading news', 'error');
+        }
+    }
+
+    // Display news in the news section
+    function displayNews(news) {
+        const newsList = document.getElementById('news-list');
+        newsList.innerHTML = '';
+
+        if (!news || news.length === 0) {
+            newsList.innerHTML = '<div class="data-item text-center">No news available.</div>';
+            document.getElementById('recent-news').textContent = '0';
+            return;
+        }
+
+        // Sort news by publish date (newest first)
+        const sortedNews = news.sort((a, b) => new Date(b.publish_date) - new Date(a.publish_date));
+
+        sortedNews.forEach(function(newsItem) {
+            const newsElement = document.createElement('div');
+            newsElement.className = 'data-item';
+            
+            const publishDate = new Date(newsItem.publish_date);
+            const formattedDate = publishDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            newsElement.innerHTML = `
+                <div class="data-item-header">
+                    <div class="data-item-title">${escapeHtml(newsItem.title)}</div>
+                    <div class="data-item-meta">
+                        <span>${formattedDate}</span>
+                    </div>
+                </div>
+                <div class="data-item-content">
+                    <p>${escapeHtml(newsItem.content)}</p>
+                </div>
+            `;
+
+            newsList.appendChild(newsElement);
+        });
+
+        // Update dashboard count with recent news (last 30 days)
+        const recentNewsCount = sortedNews.filter(item => {
+            const newsDate = new Date(item.publish_date);
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            return newsDate > thirtyDaysAgo;
+        }).length;
+
+        document.getElementById('recent-news').textContent = recentNewsCount;
+    }
+
+    // Load branches for filtering
+    async function loadBranches() {
+        try {
+            const response = await fetch(API_BASE + '/branches');
+            if (!response.ok) throw new Error('Failed to fetch branches');
+            
+            const branches = await response.json();
+            populateBranchFilter(branches);
+        } catch (error) {
+            console.error('Error loading branches:', error);
+        }
+    }
+
+    // Populate branch filter dropdown
+    function populateBranchFilter(branches) {
+        const branchFilter = document.getElementById('event-branch-filter');
+        
+        // Clear existing options except the first one
+        while (branchFilter.children.length > 1) {
+            branchFilter.removeChild(branchFilter.lastChild);
+        }
+
+        if (branches && branches.length > 0) {
+            branches.forEach(function(branch) {
+                const option = document.createElement('option');
+                option.value = branch.id;
+                option.textContent = branch.name;
+                branchFilter.appendChild(option);
+            });
+        }
+    }
+
+    // Load dashboard statistics
+    async function loadDashboardStats() {
+        try {
+            const response = await fetch(API_BASE + '/dashboard/stats');
+            if (!response.ok) throw new Error('Failed to fetch dashboard stats');
+            
+            const stats = await response.json();
+            updateDashboardCounts(stats);
+        } catch (error) {
+            console.error('Error loading dashboard stats:', error);
+            // Use fallback counts if stats endpoint fails
+            updateDashboardCounts(null);
+        }
+    }
+
+    // Update dashboard counts and activity with real data
+    function updateDashboardCounts(stats) {
+        if (stats) {
+            document.getElementById('upcoming-events').textContent = stats.upcomingEvents || 0;
+            document.getElementById('branch-members').textContent = stats.activeUsers || 0;
+            
+            // Update resources count (you might want to add a resources API endpoint)
+            document.getElementById('available-resources').textContent = '12'; // Placeholder
+        }
+
+        // Load recent activity
+        loadRecentActivity();
+    }
+
+    // Load recent activity
+    async function loadRecentActivity() {
+        try {
+            // Combine recent events and news for activity feed
+            const [eventsResponse, newsResponse] = await Promise.all([
+                fetch(API_BASE + '/events'),
+                fetch(API_BASE + '/news')
+            ]);
+
+            const events = await eventsResponse.json();
+            const news = await newsResponse.json();
+
+            displayRecentActivity(events, news);
+        } catch (error) {
+            console.error('Error loading recent activity:', error);
+        }
+    }
+
+    // Display recent activity
+    function displayRecentActivity(events, news) {
+        const activityList = document.getElementById('recent-activity-list');
+        activityList.innerHTML = '';
+
+        const activities = [];
+
+        // Add recent events (next 7 days)
+        const recentEvents = events.filter(event => {
+            const eventDate = new Date(event.date);
+            const nextWeek = new Date();
+            nextWeek.setDate(nextWeek.getDate() + 7);
+            return eventDate <= nextWeek && eventDate >= new Date();
+        });
+
+        recentEvents.forEach(event => {
+            activities.push(`Upcoming event: "${event.title}" on ${formatDate(event.date)}`);
+        });
+
+        // Add recent news (last 7 days)
+        const recentNews = news.filter(item => {
+            const newsDate = new Date(item.publish_date);
+            const lastWeek = new Date();
+            lastWeek.setDate(lastWeek.getDate() - 7);
+            return newsDate >= lastWeek;
+        });
+
+        recentNews.forEach(newsItem => {
+            activities.push(`New announcement: "${newsItem.title}"`);
+        });
+
+        if (activities.length === 0) {
+            activities.push('No recent activity. Check back later for updates.');
+        }
+
+        // Display activities (limit to 5 most recent)
+        activities.slice(0, 5).forEach(function(activity) {
+            const activityElement = document.createElement('div');
+            activityElement.className = 'activity-item';
+            activityElement.textContent = activity;
+            activityList.appendChild(activityElement);
+        });
+    }
+
+    // Filter events by branch
+    async function filterEvents() {
+        const branchId = document.getElementById('event-branch-filter').value;
+        
+        try {
+            const response = await fetch(API_BASE + '/events');
+            const events = await response.json();
+            
+            const filteredEvents = branchId === 'all' 
+                ? events 
+                : events.filter(event => event.branch_id == branchId);
+            
+            displayEvents(filteredEvents);
+        } catch (error) {
+            console.error('Error filtering events:', error);
+        }
+    }
+
+    // Refresh all data
+    function refreshData() {
+        showToast('Refreshing data...', 'success');
+        loadAllData();
+    }
+
+    // Show different sections
+    function showSection(sectionId) {
+        // Hide all sections
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => section.classList.remove('active'));
+        
+        // Remove active class from all nav items
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => item.classList.remove('active'));
+        
+        // Show selected section
+        document.getElementById(sectionId + '-section').classList.add('active');
+        
+        // Activate corresponding nav item
+        const activeNavItem = document.querySelector(`.nav-item[data-section="${sectionId}"]`);
+        if (activeNavItem) {
+            activeNavItem.classList.add('active');
+        }
+    }
+
+    // Show toast message
+    function showToast(message, type) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = 'toast';
+        if (type === 'error') {
+            toast.classList.add('error');
+        }
+        toast.classList.add('show');
+        
+        setTimeout(function() {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+
+    // Format date for display
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
+    // Escape HTML to prevent XSS
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    // Logout function
+    function logout() {
+        localStorage.removeItem('currentUser');
+        window.location.href = '/signin';
+    }
+
+    document.addEventListener('DOMContentLoaded', initializeDashboard);
+</script>
+</body>
+</html>

@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEC Dashboard - NaTeSA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .sky-gradient {
+            background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 50%, #7dd3fc 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <header class="sky-gradient shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center">
+                    <div class="h-12 w-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
+                        <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-white">BEC Dashboard</h1>
+                        <p class="text-sky-100" id="branch-info">Loading branch information...</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <p class="text-white font-medium" id="user-name">Loading...</p>
+                        <p class="text-sky-100 text-sm" id="user-role">BEC Member</p>
+                    </div>
+                    <div class="h-10 w-10 bg-white/20 rounded-full flex items-center justify-center">
+                        <span class="text-white font-semibold" id="user-initials">LD</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <nav class="flex space-x-8 border-b border-gray-200 mb-8">
+            <button id="tab-overview" class="tab-button active whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                Overview
+            </button>
+            <button id="tab-members" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                Member Management
+            </button>
+            <button id="tab-committees" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                Committees
+            </button>
+            <button id="tab-alumni" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                Alumni Tracking
+            </button>
+            <button id="tab-events" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                Branch Events
+            </button>
+        </nav>
+
+        <div id="content-overview" class="tab-content">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-12 w-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Active Members</dt>
+                                <dd id="activeMemberCount" class="text-2xl font-bold text-gray-900">0</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-12 w-12 bg-red-500 rounded-lg flex items-center justify-center">
+                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18 21l-2.636-2.636M6 6l2.636 2.636"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Inactive Members</dt>
+                                <dd id="inactiveMemberCount" class="text-2xl font-bold text-gray-900">0</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-12 w-12 bg-green-500 rounded-lg flex items-center justify-center">
+                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Alumni Count</dt>
+                                <dd id="alumniCount" class="text-2xl font-bold text-gray-900">0</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="h-12 w-12 bg-orange-500 rounded-lg flex items-center justify-center">
+                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Upcoming Events</dt>
+                                <dd id="eventCount" class="text-2xl font-bold text-gray-900">0</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Recent Activity</h3>
+                </div>
+                <div class="p-6">
+                    <div class="flow-root">
+                        <ul class="-mb-8" id="activityList">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-members" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-lg">
+                <div class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+                    <h3 class="text-lg font-semibold text-gray-900">Branch Members Management</h3>
+                    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
+                        <input type="text" id="memberSearch" placeholder="Search members..." class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                        <select id="memberFilter" class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                            <option value="all">All Members</option>
+                            <option value="active">Active Only</option>
+                            <option value="inactive">Inactive Only</option>
+                            <option value="graduating">Graduating</option>
+                        </select>
+                        <button id="addMemberBtn" class="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg transition-colors">
+                            Add Member
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Join Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersTableBody" class="bg-white divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-committees" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">Branch Executive Committee (BEC)</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4" id="becCommittee">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900">National Executive Committee (NEC)</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4" id="necCommittee">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-alumni" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-lg">
+                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-gray-900">Alumni Directory</h3>
+                    <input type="text" id="alumniSearch" placeholder="Search alumni..." class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Graduation Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Position</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alumniTableBody" class="bg-white divide-y divide-gray-200">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-events" class="tab-content hidden">
+            <div class="mb-6">
+                <button id="createEventBtn" class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-3 rounded-lg transition-colors flex items-center space-x-2">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    <span>Create New Event</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" id="eventsGrid">
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="editMemberModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Edit Member</h3>
+            <form id="editMemberForm" class="space-y-4">
+                <input type="hidden" id="editMemberId">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                    <input type="text" id="editMemberName" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="editMemberEmail" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <select id="editMemberStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="graduating">Graduating</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" id="cancelEditMember" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="addMemberModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Member</h3>
+            <form id="addMemberForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                    <input type="text" id="addMemberName" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="addMemberEmail" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <select id="addMemberStatus" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4">
+                    <button type="button" id="cancelAddMember" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors">Add Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="alumniModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Move Member to Alumni</h3>
+            <p class="text-sm text-gray-600 mb-4">Are you sure you want to move <span id="memberName" class="font-medium"></span> to the alumni list?</p>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Reason for leaving</label>
+                <select id="leaveReason" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                    <option value="graduation">Graduation</option>
+                    <option value="transfer">Transfer</option>
+                    <option value="personal">Personal reasons</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button id="cancelAlumni" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">Cancel</button>
+                <button id="confirmAlumni" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">Move to Alumni</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="eventModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Create New Event</h3>
+            <form id="eventForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Event Title</label>
+                    <input type="text" id="eventTitle" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                    <input type="date" id="eventDate" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Time</label>
+                    <input type="time" id="eventTime" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                    <input type="text" id="eventLocation" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <textarea id="eventDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"></textarea>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelEvent" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition-colors">Create Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var API_BASE = '/api';
+        var currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        var currentBranch = null;
+        var members = [];
+        var alumni = [];
+        var events = [];
+        var activities = [];
+        var becMembers = [];
+        var necMembers = [];
+
+        function initializeDashboard() {
+            if (!currentUser || !currentUser.id) {
+                alert('Please sign in first');
+                window.location.href = 'signin.html';
+                return;
+            }
+
+            updateUserInfo();
+            loadBranchData();
+            loadMembers();
+            loadAlumni();
+            loadEvents();
+            loadCommittees();
+            setupEventListeners();
+        }
+
+        function updateUserInfo() {
+            document.getElementById('user-name').textContent = currentUser.name;
+            document.getElementById('user-role').textContent = currentUser.bec_position || 'BEC Member';
+            document.getElementById('user-initials').textContent = getInitials(currentUser.name);
+        }
+
+        function getInitials(name) {
+            return name.split(' ').map(function(word) { 
+                return word[0]; 
+            }).join('').toUpperCase().substring(0, 2);
+        }
+
+        function loadBranchData() {
+            if (!currentUser.branch_id) {
+                document.getElementById('branch-info').textContent = 'No branch assigned';
+                return;
+            }
+
+            fetch(API_BASE + '/branches/' + currentUser.branch_id)
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Failed to load branch data');
+                    return response.json();
+                })
+                .then(function(branch) {
+                    currentBranch = branch;
+                    document.getElementById('branch-info').textContent = branch.name + ' - ' + branch.university;
+                })
+                .catch(function(error) {
+                    console.error('Error loading branch:', error);
+                    document.getElementById('branch-info').textContent = 'Error loading branch information';
+                });
+        }
+
+        function loadMembers() {
+            fetch(API_BASE + '/users')
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Failed to load members');
+                    return response.json();
+                })
+                .then(function(users) {
+                    members = users.filter(function(user) {
+                        return user.branch_id === currentUser.branch_id;
+                    });
+                    updateStatistics();
+                    populateMembersTable();
+                    addActivity('Members data loaded successfully');
+                })
+                .catch(function(error) {
+                    console.error('Error loading members:', error);
+                    addActivity('Error loading members data', 'error');
+                });
+        }
+
+        function loadAlumni() {
+            fetch(API_BASE + '/alumni')
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Failed to load alumni');
+                    return response.json();
+                })
+                .then(function(alumniData) {
+                    alumni = alumniData.filter(function(alum) {
+                        return alum.branch_id === currentUser.branch_id;
+                    });
+                    updateStatistics();
+                    populateAlumniTable();
+                })
+                .catch(function(error) {
+                    console.error('Error loading alumni:', error);
+                });
+        }
+
+        function loadEvents() {
+            fetch(API_BASE + '/events')
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Failed to load events');
+                    return response.json();
+                })
+                .then(function(eventsData) {
+                    events = eventsData.filter(function(event) {
+                        return event.branch_id === currentUser.branch_id;
+                    });
+                    updateStatistics();
+                    populateEvents();
+                })
+                .catch(function(error) {
+                    console.error('Error loading events:', error);
+                });
+        }
+
+        function loadCommittees() {
+            fetch(API_BASE + '/users')
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Failed to load committees');
+                    return response.json();
+                })
+                .then(function(users) {
+                    becMembers = users.filter(function(user) {
+                        return user.branch_id === currentUser.branch_id && user.is_bec_member;
+                    });
+                    
+                    necMembers = users.filter(function(user) {
+                        return user.nec_position !== null;
+                    });
+                    
+                    populateCommittees();
+                })
+                .catch(function(error) {
+                    console.error('Error loading committees:', error);
+                });
+        }
+
+        function updateStatistics() {
+            var activeCount = members.filter(function(m) {
+                return m.status === 'active';
+            }).length;
+            
+            var inactiveCount = members.filter(function(m) {
+                return m.status === 'inactive';
+            }).length;
+            
+            var upcomingEvents = events.filter(function(event) {
+                return new Date(event.date) > new Date();
+            }).length;
+
+            document.getElementById('activeMemberCount').textContent = activeCount;
+            document.getElementById('inactiveMemberCount').textContent = inactiveCount;
+            document.getElementById('alumniCount').textContent = alumni.length;
+            document.getElementById('eventCount').textContent = upcomingEvents;
+        }
+
+        function populateMembersTable(membersToShow = members) {
+            var tbody = document.getElementById('membersTableBody');
+            tbody.innerHTML = '';
+
+            membersToShow.forEach(function(member) {
+                var row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 flex-shrink-0">
+                                <div class="h-10 w-10 rounded-full bg-sky-100 flex items-center justify-center">
+                                    <span class="text-sm font-medium text-sky-600">${getInitials(member.name)}</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${member.name}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${member.email}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(member.status)}">
+                            ${member.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${member.created_at ? new Date(member.created_at).toLocaleDateString() : 'Unknown'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                        <button onclick="editMember(${member.id})" class="text-sky-600 hover:text-sky-900 transition-colors">Edit</button>
+                        <button onclick="toggleMemberStatus(${member.id})" class="text-${member.status === 'active' ? 'red' : 'green'}-600 hover:text-${member.status === 'active' ? 'red' : 'green'}-900 transition-colors">
+                            ${member.status === 'active' ? 'Deactivate' : 'Activate'}
+                        </button>
+                        <button onclick="moveToAlumni(${member.id}, '${member.name}')" class="text-orange-600 hover:text-orange-900 transition-colors">Move to Alumni</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function getStatusColor(status) {
+            var colors = {
+                'active': 'bg-green-100 text-green-800',
+                'inactive': 'bg-red-100 text-red-800',
+                'graduating': 'bg-yellow-100 text-yellow-800'
+            };
+            return colors[status] || 'bg-gray-100 text-gray-800';
+        }
+
+        function populateAlumniTable(alumniToShow = alumni) {
+            var tbody = document.getElementById('alumniTableBody');
+            tbody.innerHTML = '';
+
+            alumniToShow.forEach(function(alum) {
+                var row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 flex-shrink-0">
+                                <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                                    <span class="text-sm font-medium text-green-600">${getInitials(alum.name)}</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${alum.name}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${alum.email}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${alum.graduation_date ? new Date(alum.graduation_date).toLocaleDateString() : 'Unknown'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${alum.last_position || 'Member'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${alum.contact || alum.email}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function populateCommittees() {
+            var becContainer = document.getElementById('becCommittee');
+            var necContainer = document.getElementById('necCommittee');
+
+            becContainer.innerHTML = '';
+            necContainer.innerHTML = '';
+
+            becMembers.forEach(function(member) {
+                var memberDiv = document.createElement('div');
+                memberDiv.className = 'flex items-center justify-between p-4 bg-sky-50 rounded-lg hover:bg-sky-100 transition-colors';
+                memberDiv.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="h-10 w-10 bg-sky-500 rounded-full flex items-center justify-center">
+                            <span class="text-sm font-medium text-white">${getInitials(member.name)}</span>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-gray-900">${member.name}</div>
+                            <div class="text-sm text-sky-600">${member.bec_position || 'BEC Member'}</div>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-500">${member.email}</div>
+                `;
+                becContainer.appendChild(memberDiv);
+            });
+
+            necMembers.forEach(function(member) {
+                var memberDiv = document.createElement('div');
+                memberDiv.className = 'flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors';
+                memberDiv.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="h-10 w-10 bg-gray-500 rounded-full flex items-center justify-center">
+                            <span class="text-sm font-medium text-white">${getInitials(member.name)}</span>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium text-gray-900">${member.name}</div>
+                            <div class="text-sm text-gray-600">${member.nec_position}</div>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-500">${member.email}</div>
+                `;
+                necContainer.appendChild(memberDiv);
+            });
+        }
+
+        function populateEvents() {
+            var eventsGrid = document.getElementById('eventsGrid');
+            eventsGrid.innerHTML = '';
+
+            events.forEach(function(event) {
+                var eventCard = document.createElement('div');
+                eventCard.className = 'bg-white rounded-xl shadow-lg p-6 card-hover';
+                eventCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-gray-900">${event.title}</h4>
+                        <button onclick="deleteEvent(${event.id})" class="text-red-600 hover:text-red-800 transition-colors">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="space-y-3 text-sm text-gray-600">
+                        <div class="flex items-center">
+                            <svg class="h-4 w-4 mr-2 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            ${new Date(event.date).toLocaleDateString()} at ${event.time}
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="h-4 w-4 mr-2 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            ${event.location}
+                        </div>
+                        <p class="mt-2 text-gray-700">${event.description}</p>
+                    </div>
+                `;
+                eventsGrid.appendChild(eventCard);
+            });
+        }
+
+        function addActivity(message, type) {
+            var activityList = document.getElementById('activityList');
+            var iconColor = type === 'error' ? 'bg-red-500' : 'bg-sky-500';
+            var icon = type === 'error' ? 
+                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>' :
+                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>';
+            
+            var activityItem = document.createElement('li');
+            activityItem.className = 'relative pb-8';
+            activityItem.innerHTML = `
+                <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                <div class="relative flex space-x-3">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-full ${iconColor}">
+                        <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            ${icon}
+                        </svg>
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div>
+                            <p class="text-sm text-gray-500">${message}</p>
+                            <p class="mt-0.5 text-xs text-gray-400">${new Date().toLocaleTimeString()}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            activityList.insertBefore(activityItem, activityList.firstChild);
+            
+            if (activityList.children.length > 5) {
+                activityList.removeChild(activityList.lastChild);
+            }
+        }
+
+        function setupEventListeners() {
+            initTabs();
+            initSearch();
+            initModals();
+        }
+
+        function initTabs() {
+            var tabButtons = document.querySelectorAll('.tab-button');
+            var tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var tabId = button.id.replace('tab-', '');
+                    
+                    tabButtons.forEach(function(btn) {
+                        btn.classList.remove('active', 'border-sky-500', 'text-sky-600');
+                        btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    });
+                    
+                    button.classList.add('active', 'border-sky-500', 'text-sky-600');
+                    button.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                    
+                    tabContents.forEach(function(content) {
+                        content.classList.add('hidden');
+                    });
+                    
+                    document.getElementById('content-' + tabId).classList.remove('hidden');
+                });
+            });
+        }
+
+        function initSearch() {
+            document.getElementById('memberSearch').addEventListener('input', function(e) {
+                var searchTerm = e.target.value.toLowerCase();
+                var filteredMembers = members.filter(function(member) {
+                    return member.name.toLowerCase().includes(searchTerm) || 
+                           member.email.toLowerCase().includes(searchTerm);
+                });
+                populateMembersTable(filteredMembers);
+            });
+
+            document.getElementById('memberFilter').addEventListener('change', function(e) {
+                var filterValue = e.target.value;
+                var filteredMembers = filterValue === 'all' ? members : members.filter(function(member) {
+                    return member.status === filterValue;
+                });
+                populateMembersTable(filteredMembers);
+            });
+
+            document.getElementById('alumniSearch').addEventListener('input', function(e) {
+                var searchTerm = e.target.value.toLowerCase();
+                var filteredAlumni = alumni.filter(function(alum) {
+                    return alum.name.toLowerCase().includes(searchTerm) || 
+                           alum.email.toLowerCase().includes(searchTerm);
+                });
+                populateAlumniTable(filteredAlumni);
+            });
+        }
+
+        function initModals() {
+            // Add member modal
+            document.getElementById('addMemberBtn').addEventListener('click', function() {
+                document.getElementById('addMemberModal').classList.remove('hidden');
+                document.getElementById('addMemberModal').classList.add('flex');
+            });
+
+            document.getElementById('cancelAddMember').addEventListener('click', function() {
+                document.getElementById('addMemberModal').classList.add('hidden');
+                document.getElementById('addMemberModal').classList.remove('flex');
+            });
+
+            document.getElementById('addMemberForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addNewMember();
+            });
+
+            // Event modal
+            document.getElementById('createEventBtn').addEventListener('click', function() {
+                document.getElementById('eventModal').classList.remove('hidden');
+                document.getElementById('eventModal').classList.add('flex');
+            });
+
+            document.getElementById('cancelEvent').addEventListener('click', function() {
+                document.getElementById('eventModal').classList.add('hidden');
+                document.getElementById('eventModal').classList.remove('flex');
+            });
+
+            document.getElementById('eventForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                createNewEvent();
+            });
+        }
+
+        function addNewMember() {
+            var name = document.getElementById('addMemberName').value;
+            var email = document.getElementById('addMemberEmail').value;
+            var status = document.getElementById('addMemberStatus').value;
+
+            var memberData = {
+                name: name,
+                email: email,
+                password: 'temp123',
+                role: 'member',
+                branch_id: currentUser.branch_id,
+                is_bec_member: false,
+                nec_position: null,
+                bec_position: null,
+                status: status
+            };
+
+            fetch(API_BASE + '/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(memberData)
+            })
+            .then(function(response) {
+                if (!response.ok) throw new Error('Failed to add member');
+                return response.json();
+            })
+            .then(function(newMember) {
+                members.push(newMember);
+                populateMembersTable();
+                updateStatistics();
+                addActivity('New member added: ' + name);
+                
+                document.getElementById('addMemberForm').reset();
+                document.getElementById('addMemberModal').classList.add('hidden');
+                document.getElementById('addMemberModal').classList.remove('flex');
+            })
+            .catch(function(error) {
+                console.error('Error adding member:', error);
+                alert('Error adding member: ' + error.message);
+            });
+        }
+
+        function createNewEvent() {
+            var title = document.getElementById('eventTitle').value;
+            var date = document.getElementById('eventDate').value;
+            var time = document.getElementById('eventTime').value;
+            var location = document.getElementById('eventLocation').value;
+            var description = document.getElementById('eventDescription').value;
+
+            var eventData = {
+                title: title,
+                date: date + 'T' + time,
+                branch_id: currentUser.branch_id,
+                created_by: currentUser.id,
+                event_type: 'General',
+                location: location,
+                description: description
+            };
+
+            fetch(API_BASE + '/events', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(eventData)
+            })
+            .then(function(response) {
+                if (!response.ok) throw new Error('Failed to create event');
+                return response.json();
+            })
+            .then(function(newEvent) {
+                events.push(newEvent);
+                populateEvents();
+                updateStatistics();
+                addActivity('New event created: ' + title);
+                
+                document.getElementById('eventForm').reset();
+                document.getElementById('eventModal').classList.add('hidden');
+                document.getElementById('eventModal').classList.remove('flex');
+            })
+            .catch(function(error) {
+                console.error('Error creating event:', error);
+                alert('Error creating event: ' + error.message);
+            });
+        }
+
+        function editMember(memberId) {
+            var member = members.find(function(m) { return m.id === memberId; });
+            if (member) {
+                document.getElementById('editMemberId').value = member.id;
+                document.getElementById('editMemberName').value = member.name;
+                document.getElementById('editMemberEmail').value = member.email;
+                document.getElementById('editMemberStatus').value = member.status;
+                
+                document.getElementById('editMemberModal').classList.remove('hidden');
+                document.getElementById('editMemberModal').classList.add('flex');
+            }
+        }
+
+        function toggleMemberStatus(memberId) {
+            var member = members.find(function(m) { return m.id === memberId; });
+            if (member) {
+                var newStatus = member.status === 'active' ? 'inactive' : 'active';
+                
+                fetch(API_BASE + '/users/' + memberId, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                })
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Failed to update status');
+                    return response.json();
+                })
+                .then(function(updatedMember) {
+                    member.status = newStatus;
+                    populateMembersTable();
+                    updateStatistics();
+                    addActivity('Member status updated: ' + member.name + ' (' + newStatus + ')');
+                })
+                .catch(function(error) {
+                    console.error('Error updating status:', error);
+                    alert('Error updating status: ' + error.message);
+                });
+            }
+        }
+
+        function moveToAlumni(memberId, memberName) {
+            document.getElementById('memberName').textContent = memberName;
+            document.getElementById('alumniModal').classList.remove('hidden');
+            document.getElementById('alumniModal').classList.add('flex');
+            
+            document.getElementById('confirmAlumni').onclick = function() {
+                var member = members.find(function(m) { return m.id === memberId; });
+                if (member) {
+                    var alumniData = {
+                        user_id: member.id,
+                        branch_id: member.branch_id,
+                        graduation_date: new Date().toISOString().split('T')[0],
+                        degree: 'Not Specified',
+                        current_status: 'Graduated',
+                        last_position: member.bec_position || 'Member'
+                    };
+
+                    fetch(API_BASE + '/alumni', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(alumniData)
+                    })
+                    .then(function(response) {
+                        if (!response.ok) throw new Error('Failed to move to alumni');
+                        return response.json();
+                    })
+                    .then(function(newAlumni) {
+                        alumni.push(newAlumni);
+                        
+                        fetch(API_BASE + '/users/' + memberId, {
+                            method: 'DELETE'
+                        })
+                        .then(function() {
+                            members = members.filter(function(m) { return m.id !== memberId; });
+                            populateMembersTable();
+                            populateAlumniTable();
+                            updateStatistics();
+                            addActivity('Member moved to alumni: ' + memberName);
+                            
+                            document.getElementById('alumniModal').classList.add('hidden');
+                            document.getElementById('alumniModal').classList.remove('flex');
+                        });
+                    })
+                    .catch(function(error) {
+                        console.error('Error moving to alumni:', error);
+                        alert('Error moving to alumni: ' + error.message);
+                    });
+                }
+            };
+        }
+
+        function deleteEvent(eventId) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                fetch(API_BASE + '/events/' + eventId, {
+                    method: 'DELETE'
+                })
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Failed to delete event');
+                    events = events.filter(function(e) { return e.id !== eventId; });
+                    populateEvents();
+                    updateStatistics();
+                    addActivity('Event deleted');
+                })
+                .catch(function(error) {
+                    console.error('Error deleting event:', error);
+                    alert('Error deleting event: ' + error.message);
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+</html>

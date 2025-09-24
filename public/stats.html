@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NaTeSA - Statistics Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .nav-item.active {
+            border-bottom: 2px solid #4f46e5;
+            color: #4f46e5;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">NaTeSA Statistics Dashboard</h1>
+                <p class="text-gray-600">Real-time Analytics & Insights</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span id="current-user-name" class="text-gray-700">Loading...</span>
+                <span id="current-user-role" class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-sm">Member</span>
+                <button onclick="dashboard.refreshAllData()" class="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700">Refresh Data</button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="bg-white border-b">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex space-x-8">
+                <button onclick="showSection('overview')" class="nav-item py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Overview</button>
+                <button onclick="showSection('users')" class="nav-item py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">User Statistics</button>
+                <button onclick="showSection('events')" class="nav-item py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Event Analytics</button>
+                <button onclick="showSection('branches')" class="nav-item py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Branch Performance</button>
+                <button onclick="showSection('alumni')" class="nav-item py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">Alumni Tracking</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <section id="overview-section" class="content-section active space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
+                <button onclick="exportOverviewData()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Export Report</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Total Members</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="total-members">0</div>
+                    <div class="text-sm text-gray-600" id="members-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Active Events</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="active-events">0</div>
+                    <div class="text-sm text-gray-600" id="events-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Total Branches</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="total-branches">0</div>
+                    <div class="text-sm text-gray-600" id="branches-trend">Loading...</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Alumni Count</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="total-alumni">0</div>
+                    <div class="text-sm text-gray-600" id="alumni-trend">Loading...</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="chart-container">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Member Growth</h3>
+                    <canvas id="memberGrowthChart" height="300"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">User Distribution by Role</h3>
+                    <canvas id="roleDistributionChart" height="300"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="users-section" class="content-section space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900">User Statistics</h2>
+                <button onclick="exportUserData()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Export User Data</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Active Members</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="active-members">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">BEC Members</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="bec-members">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">NEC Members</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="nec-members">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">New Members (30d)</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="new-members-month">0</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Member Registrations</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Branch</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-users-table" class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="events-section" class="content-section space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900">Event Analytics</h2>
+                <button onclick="exportEventData()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Export Event Data</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Total Events</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="total-events">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Upcoming Events</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="upcoming-events">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Events This Month</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="events-this-month">0</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Upcoming Events</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Event Title</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Branch</th>
+                            </tr>
+                        </thead>
+                        <tbody id="upcoming-events-table" class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="branches-section" class="content-section space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900">Branch Performance</h2>
+                <button onclick="exportBranchData()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Export Branch Data</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Total Branches</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="branches-total">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Active Branches</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="active-branches">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Avg Members/Branch</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="avg-members-branch">0</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Branch Performance</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Branch Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">University</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Members</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Alumni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="branch-ranking-table" class="bg-white divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="alumni-section" class="content-section space-y-6">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-900">Alumni Tracking</h2>
+                <button onclick="exportAlumniData()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Export Alumni Data</button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Total Alumni</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="alumni-total">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">Alumni This Year</h3>
+                    <div class="text-3xl font-bold text-gray-900" id="alumni-this-year">0</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Alumni by Graduation Year</h3>
+                <canvas id="alumniByYearChart" height="300"></canvas>
+            </div>
+        </section>
+    </main>
+
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+            <p class="mt-4 text-gray-600">Loading database statistics...</p>
+        </div>
+    </div>
+
+    <script>
+        var API_BASE = '/api';
+        var currentUser = JSON.parse(localStorage.getItem('currentUser')) || { name: 'Guest', role: 'member' };
+        var charts = {};
+
+        function initializeDashboard() {
+            showLoading(true);
+            
+            document.getElementById('current-user-name').textContent = currentUser.name;
+            document.getElementById('current-user-role').textContent = currentUser.role.toUpperCase();
+            
+            loadAllDataFromDatabase();
+            
+            setInterval(function() {
+                refreshAllData();
+            }, 300000);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none';
+        }
+
+        function loadAllDataFromDatabase() {
+            var startTime = Date.now();
+            
+            loadUsersData();
+            loadEventsData();
+            loadBranchesData();
+            loadAlumniData();
+            
+            setTimeout(function() {
+                showLoading(false);
+                document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+            }, 1000);
+        }
+
+        function loadUsersData() {
+            fetch(API_BASE + '/users')
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.json();
+                })
+                .then(function(users) {
+                    processUsersData(users);
+                })
+                .catch(function(error) {
+                    console.error('Error loading users:', error);
+                    document.getElementById('total-members').textContent = 'Error';
+                });
+        }
+
+        function processUsersData(users) {
+            var totalMembers = users.length;
+            var activeMembers = users.filter(function(user) {
+                return user.status === 'active';
+            }).length;
+            
+            var becMembers = users.filter(function(user) {
+                return user.is_bec_member === true;
+            }).length;
+            
+            var necMembers = users.filter(function(user) {
+                return user.role === 'admin' || user.nec_position !== null;
+            }).length;
+            
+            var newMembersMonth = users.filter(function(user) {
+                var monthAgo = new Date();
+                monthAgo.setMonth(monthAgo.getMonth() - 1);
+                return new Date(user.created_at || new Date()) > monthAgo;
+            }).length;
+
+            document.getElementById('total-members').textContent = totalMembers;
+            document.getElementById('active-members').textContent = activeMembers;
+            document.getElementById('bec-members').textContent = becMembers;
+            document.getElementById('nec-members').textContent = necMembers;
+            document.getElementById('new-members-month').textContent = newMembersMonth;
+
+            updateMemberGrowthChart(users);
+            updateRoleDistributionChart(users);
+            populateRecentUsersTable(users.slice(-10).reverse());
+        }
+
+        function loadEventsData() {
+            fetch(API_BASE + '/events')
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.json();
+                })
+                .then(function(events) {
+                    processEventsData(events);
+                })
+                .catch(function(error) {
+                    console.error('Error loading events:', error);
+                });
+        }
+
+        function processEventsData(events) {
+            var totalEvents = events.length;
+            var upcomingEvents = events.filter(function(event) {
+                return new Date(event.date) > new Date();
+            }).length;
+            
+            var eventsThisMonth = events.filter(function(event) {
+                var eventDate = new Date(event.date);
+                var now = new Date();
+                return eventDate.getMonth() === now.getMonth() && eventDate.getFullYear() === now.getFullYear();
+            }).length;
+
+            document.getElementById('total-events').textContent = totalEvents;
+            document.getElementById('active-events').textContent = upcomingEvents;
+            document.getElementById('upcoming-events').textContent = upcomingEvents;
+            document.getElementById('events-this-month').textContent = eventsThisMonth;
+
+            populateUpcomingEventsTable(events.filter(function(event) {
+                return new Date(event.date) > new Date();
+            }).slice(0, 10));
+        }
+
+        function loadBranchesData() {
+            fetch(API_BASE + '/branches')
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.json();
+                })
+                .then(function(branches) {
+                    processBranchesData(branches);
+                })
+                .catch(function(error) {
+                    console.error('Error loading branches:', error);
+                });
+        }
+
+        function processBranchesData(branches) {
+            var totalBranches = branches.length;
+            var activeBranches = branches.filter(function(branch) {
+                return branch.member_count > 0;
+            }).length;
+            
+            var totalMembers = branches.reduce(function(sum, branch) {
+                return sum + (branch.member_count || 0);
+            }, 0);
+            
+            var avgMembersPerBranch = totalBranches > 0 ? totalMembers / totalBranches : 0;
+
+            document.getElementById('total-branches').textContent = totalBranches;
+            document.getElementById('branches-total').textContent = totalBranches;
+            document.getElementById('active-branches').textContent = activeBranches;
+            document.getElementById('avg-members-branch').textContent = Math.round(avgMembersPerBranch);
+
+            populateBranchRankingTable(branches);
+        }
+
+        function loadAlumniData() {
+            fetch(API_BASE + '/alumni')
+                .then(function(response) {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.json();
+                })
+                .then(function(alumni) {
+                    processAlumniData(alumni);
+                })
+                .catch(function(error) {
+                    console.error('Error loading alumni:', error);
+                });
+        }
+
+        function processAlumniData(alumni) {
+            var totalAlumni = alumni.length;
+            var alumniThisYear = alumni.filter(function(alum) {
+                return new Date(alum.graduation_date).getFullYear() === new Date().getFullYear();
+            }).length;
+
+            document.getElementById('total-alumni').textContent = totalAlumni;
+            document.getElementById('alumni-total').textContent = totalAlumni;
+            document.getElementById('alumni-this-year').textContent = alumniThisYear;
+
+            updateAlumniByYearChart(alumni);
+        }
+
+        function updateMemberGrowthChart(users) {
+            var ctx = document.getElementById('memberGrowthChart').getContext('2d');
+            
+            if (charts.memberGrowthChart) {
+                charts.memberGrowthChart.destroy();
+            }
+
+            var monthlyData = getMonthlyUserData(users);
+            
+            charts.memberGrowthChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: monthlyData.labels,
+                    datasets: [{
+                        label: 'Total Members',
+                        data: monthlyData.totals,
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateRoleDistributionChart(users) {
+            var ctx = document.getElementById('roleDistributionChart').getContext('2d');
+            
+            if (charts.roleDistributionChart) {
+                charts.roleDistributionChart.destroy();
+            }
+
+            var roleCounts = {
+                'member': 0,
+                'branch_admin': 0,
+                'admin': 0
+            };
+
+            users.forEach(function(user) {
+                roleCounts[user.role] = (roleCounts[user.role] || 0) + 1;
+            });
+
+            charts.roleDistributionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Members', 'Branch Admins', 'NEC Admins'],
+                    datasets: [{
+                        data: [roleCounts.member, roleCounts.branch_admin, roleCounts.admin],
+                        backgroundColor: ['#10b981', '#3b82f6', '#8b5cf6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateAlumniByYearChart(alumni) {
+            var ctx = document.getElementById('alumniByYearChart').getContext('2d');
+            
+            if (charts.alumniByYearChart) {
+                charts.alumniByYearChart.destroy();
+            }
+
+            var yearCounts = {};
+            alumni.forEach(function(alum) {
+                var year = new Date(alum.graduation_date).getFullYear();
+                yearCounts[year] = (yearCounts[year] || 0) + 1;
+            });
+
+            var years = Object.keys(yearCounts).sort();
+            var counts = years.map(function(year) { return yearCounts[year]; });
+
+            charts.alumniByYearChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: 'Alumni Count',
+                        data: counts,
+                        backgroundColor: '#f59e0b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+        }
+
+        function getMonthlyUserData(users) {
+            var monthlyData = {};
+            var currentDate = new Date();
+            var sixMonthsAgo = new Date();
+            sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
+
+            for (var i = 0; i < 6; i++) {
+                var date = new Date();
+                date.setMonth(currentDate.getMonth() - i);
+                var key = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0');
+                monthlyData[key] = 0;
+            }
+
+            users.forEach(function(user) {
+                var joinDate = new Date(user.created_at || new Date());
+                if (joinDate >= sixMonthsAgo) {
+                    var key = joinDate.getFullYear() + '-' + (joinDate.getMonth() + 1).toString().padStart(2, '0');
+                    monthlyData[key] = (monthlyData[key] || 0) + 1;
+                }
+            });
+
+            var labels = Object.keys(monthlyData).reverse();
+            var totals = [];
+            var runningTotal = 0;
+
+            labels.forEach(function(month) {
+                runningTotal += monthlyData[month];
+                totals.push(runningTotal);
+            });
+
+            return {
+                labels: labels.map(function(label) {
+                    var parts = label.split('-');
+                    return new Date(parts[0], parts[1] - 1).toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+                }),
+                totals: totals
+            };
+        }
+
+        function populateRecentUsersTable(users) {
+            var tbody = document.getElementById('recent-users-table');
+            tbody.innerHTML = '';
+
+            users.forEach(function(user) {
+                var row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.name || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.email || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.role || 'member'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${user.branch_id || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${user.status || 'active'}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function populateUpcomingEventsTable(events) {
+            var tbody = document.getElementById('upcoming-events-table');
+            tbody.innerHTML = '';
+
+            events.forEach(function(event) {
+                var row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${event.title || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${new Date(event.date).toLocaleDateString()}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${event.event_type || 'General'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${event.branch_id || 'N/A'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function populateBranchRankingTable(branches) {
+            var tbody = document.getElementById('branch-ranking-table');
+            tbody.innerHTML = '';
+
+            var sortedBranches = branches.sort(function(a, b) {
+                return (b.member_count || 0) - (a.member_count || 0);
+            });
+
+            sortedBranches.forEach(function(branch) {
+                var row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${branch.name || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${branch.university || 'N/A'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${branch.member_count || 0}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${branch.alumni_count || 0}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(function(section) {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-item').forEach(function(item) {
+                item.classList.remove('active');
+            });
+
+            document.getElementById(sectionId + '-section').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function refreshAllData() {
+            showLoading(true);
+            loadAllDataFromDatabase();
+        }
+
+        function exportOverviewData() {
+            alert('Exporting overview data...');
+        }
+
+        function exportUserData() {
+            alert('Exporting user data...');
+        }
+
+        function exportEventData() {
+            alert('Exporting event data...');
+        }
+
+        function exportBranchData() {
+            alert('Exporting branch data...');
+        }
+
+        function exportAlumniData() {
+            alert('Exporting alumni data...');
+        }
+
+        var dashboard = {
+            refreshAllData: refreshAllData
+        };
+
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+</html>

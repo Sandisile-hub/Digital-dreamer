@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nazareth Tertiary Students Association (NaTeSA)</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container header-content">
+      <h1 class="logo">Nazareth Tertiary Students Association</h1>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Events</a></li>
+          <li><a href="#">Resources</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </nav>
+      <a href="signup.html" class="join-btn">Join Us</a>
+    </div>
+  </header>
+
+  <!-- Hero / Welcome Section -->
+  <section class="hero">
+    <div class="container hero-content">
+      <h2>Welcome to NaTeSA</h2>
+      <p>
+        NaTeSA is a student-led association that helps tertiary students connect, learn, and grow.
+        Our goal is to bridge the gap between university and industry by building real-world skills
+        while creating something meaningful for the student community.
+      </p>
+      <a href="#events" class="cta-btn">See Upcoming Events</a>
+    </div>
+  </section>
+
+  <!-- About / Mission Section -->
+  <section class="about">
+    <div class="container">
+      <h2>Our Mission & Goals</h2>
+      <p>
+        We aim to empower students by offering workshops, networking events, and real-world project
+        opportunities to enhance employability and industry readiness.
+      </p>
+    </div>
+  </section>
+
+  <!-- Events Section -->
+  <section class="events" id="events">
+    <div class="container">
+      <h2>Upcoming Events</h2>
+      <div id="events-container" class="event-grid">
+        <!-- Events will be loaded here by JavaScript -->
+        <p>Loading events...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 Nazareth Tertiary Students Association. All rights reserved.</p>
+  </footer>
+<script src="api.js"></script>
+  <!-- JavaScript to load events from database -->
+  <script>
+    // Function to load events from API
+    function loadEvents() {
+      // Get the container where events will be shown
+      var eventsContainer = document.getElementById('events-container');
+      
+      // Show loading message
+      eventsContainer.innerHTML = '<p>Loading events...</p>';
+      
+      // Make API call to get events
+      fetch(`${API_BASE}/events`)
+        .then(function(response) {
+          return response.json();
+        })
+        .then(function(events) {
+          // Clear loading message
+          eventsContainer.innerHTML = '';
+          
+          // Check if there are events
+          if (events.length === 0) {
+            eventsContainer.innerHTML = '<p>No upcoming events at the moment.</p>';
+            return;
+          }
+          
+          // Create HTML for each event
+          events.forEach(function(event) {
+            // Format the date to look nice
+            var eventDate = new Date(event.date);
+            var formattedDate = eventDate.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
+            
+            // Create event card HTML
+            var eventCard = document.createElement('div');
+            eventCard.className = 'event-card';
+            eventCard.innerHTML = `
+              <h3>${event.title}</h3>
+              <p><strong>Date:</strong> ${formattedDate}</p>
+              <p><strong>Type:</strong> ${event.event_type}</p>
+              <p>${event.description || 'Join us for this exciting event!'}</p>
+              ${event.location ? '<p><strong>Location:</strong> ' + event.location + '</p>' : ''}
+            `;
+            
+            // Add the event card to the container
+            eventsContainer.appendChild(eventCard);
+          });
+        })
+        .catch(function(error) {
+          // Show error message if API call fails
+          console.log('Error loading events:', error);
+          eventsContainer.innerHTML = '<p>Sorry, could not load events. Please try again later.</p>';
+        });
+    }
+    
+    // Load events when page finishes loading
+    window.addEventListener('load', function() {
+      loadEvents();
+    });
+  </script>
+</body>
+</html>
